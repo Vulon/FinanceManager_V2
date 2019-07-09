@@ -1,0 +1,38 @@
+<languages>
+    <language id="RUSSIAN">
+        <login>Войти в учетную запись</login>
+        <email>Адрес электронной почты</email>
+        <password>Пароль</password>
+        <register>Зарегестрироваться</register>
+        <have_account>Уже есть учетная запись?</have_account>
+        <dont_have_account>Ещё нет учетной записи?</dont_have_account>
+        <repeat_password>Повторите пароль</repeat_password>
+        <email_incorrect>Неверный формат электронной почты</email_incorrect>
+        <password_incorrect>Пароль должен быть больше 5 символов, содержать как минимум одну цифру</password_incorrect>
+        <passwords_mismatch>Пароли не совпадают</passwords_mismatch>
+        <connecting_server>Осуществляется подключение к серверу</connecting_server>
+        <already_registered>Пользователь с таким адресом уже существует</already_registered>
+        <check_your_email>На вашу почту отправлено письмо с подтверждением регистрации</check_your_email>
+        <server_error>Внутренняя ошибка сервера</server_error>
+        <user_not_found>Пользователь с такими данными не найден в базе данных</user_not_found>
+        <email_not_verified>Вы не подтвердили адрес электронной почты</email_not_verified>
+    </language>
+    <language id="ENGLISH">
+        <login>Sign in</login>
+        <email>Email</email>
+        <password>Password</password>
+        <register>Register</register>
+        <have_account>Already have an account?</have_account>
+        <dont_have_account>Don't have an account?</dont_have_account>
+        <repeat_password>Repeat password</repeat_password>
+        <email_incorrect>Invalid email address</email_incorrect>
+        <password_incorrect>Password must be longer than 5 characters and contain at least one digit</password_incorrect>
+        <passwords_mismatch>Passwords do not match</passwords_mismatch>
+        <connecting_server>Connecting to the server</connecting_server>
+        <already_registered>User with that address already exists</already_registered>
+        <check_your_email>An email with verification link has been sent to your email address</check_your_email>
+        <server_error>Internal server error</server_error>
+        <user_not_found>User with that email and password has not been found in database</user_not_found>
+        <email_not_verified>You have not verified your email address</email_not_verified>
+    </language>
+</languages>
