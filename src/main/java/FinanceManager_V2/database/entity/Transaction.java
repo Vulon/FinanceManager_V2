@@ -1,22 +1,31 @@
 package FinanceManager_V2.database.entity;
 
+import FinanceManager_V2.database.entity.database_pk.TransactionPK;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "transaction")
-public class Transaction {
+@IdClass(TransactionPK.class)
+public class Transaction implements Serializable {
+    private static final long serialVersionUID = -5744874026510540290L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "transaction")
-    private Long id;
+    @Column(name = "transaction_id")
+    private Long transaction_id;
 
-    @Column(name = "amount", nullable = false)
+    @Id
+    @Column(name = "user_id")
+    private Long user_id;
+
+    @Column(name = "amount")
     private Double amount;
 
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name = "date")
     private Date date;
 
@@ -26,33 +35,29 @@ public class Transaction {
     @OneToOne
     private Category category;
 
-    public Transaction(Double amount, Category category, Date date, String note) {
+
+    public Transaction(Long user_id, Double amount, Date date, String note, Category category) {
+        this.user_id = user_id;
         this.amount = amount;
-        this.category = category;
         this.date = date;
         this.note = note;
+        this.category = category;
     }
 
     public Transaction() {
     }
 
+
     @Override
     public String toString() {
         return "Transaction{" +
-                "id=" + id +
+                "transaction_id=" + transaction_id +
+                ", user_id=" + user_id +
                 ", amount=" + amount +
-                ", category=" + category +
                 ", date=" + date +
                 ", note='" + note + '\'' +
+                ", category=" + category +
                 '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override
@@ -60,16 +65,33 @@ public class Transaction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return id.equals(that.id) &&
-                (amount < that.amount + 1 && amount > that.amount - 1) &&
-                (date.getTime() == that.getDate().getTime()) &&
+        return transaction_id.equals(that.transaction_id) &&
+                user_id.equals(that.user_id) &&
+                amount.equals(that.amount) &&
+                date.equals(that.date) &&
                 Objects.equals(note, that.note) &&
                 category.equals(that.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, amount, date, note, category);
+        return Objects.hash(transaction_id, user_id, amount, date, note, category);
+    }
+
+    public Long getTransaction_id() {
+        return transaction_id;
+    }
+
+    public void setTransaction_id(Long transaction_id) {
+        this.transaction_id = transaction_id;
+    }
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public Double getAmount() {

@@ -1,24 +1,20 @@
-package FinanceManager_V2;
+package FinanceManager_V2.services;
 
 
 import FinanceManager_V2.TransportableDataObjects.TokenData;
-import FinanceManager_V2.database.BudgetRepository;
-import FinanceManager_V2.database.CategoryRepository;
-import FinanceManager_V2.database.TransactionRepository;
-import FinanceManager_V2.database.UserRepository;
+import FinanceManager_V2.database.Repositories.BudgetRepository;
+import FinanceManager_V2.database.Repositories.CategoryRepository;
+import FinanceManager_V2.database.Repositories.TransactionRepository;
+import FinanceManager_V2.database.Repositories.UserRepository;
 import FinanceManager_V2.database.entity.User;
-import FinanceManager_V2.services.Lang;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
-public class ServerConnectionService {
+public class AuthenticationService {
     User user;
     TokenData tokenData;
     private final String url = "http://localhost:8081";
@@ -30,7 +26,7 @@ public class ServerConnectionService {
     BudgetRepository budgetRepository;
     Lang lang;
 
-    public ServerConnectionService(UserRepository userRepository, TransactionRepository transactionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, Lang lang) {
+    public AuthenticationService(UserRepository userRepository, TransactionRepository transactionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, Lang lang) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
@@ -44,8 +40,8 @@ public class ServerConnectionService {
         builder.queryParam("email", email)
                 .queryParam("password", password);
         System.out.println("Connecting to " + builder.toUriString());
-
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(builder.toUriString(), null, String.class);
+
         return responseEntity.getBody();
     }
 
@@ -78,7 +74,7 @@ public class ServerConnectionService {
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    public HttpStatus debugClearUsersDatabase(){
+    public HttpStatus debugClearUsersDatabase(){ //TODO delete debug method
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url + "/clear", String.class);
         return response.getStatusCode();

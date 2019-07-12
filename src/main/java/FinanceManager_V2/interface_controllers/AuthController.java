@@ -1,22 +1,17 @@
 package FinanceManager_V2.interface_controllers;
 
-import FinanceManager_V2.ServerConnectionService;
+import FinanceManager_V2.services.AuthenticationService;
 import FinanceManager_V2.services.Lang;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 @Component
@@ -54,7 +49,7 @@ public class AuthController {
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.connecting_server));
 
-        HttpStatus httpStatus = serverConnectionService.attemptLogin(login_email_textfield.getText(),
+        HttpStatus httpStatus = authenticationService.attemptLogin(login_email_textfield.getText(),
                 login_password_textfield.getText());
 
         if(httpStatus  == HttpStatus.NO_CONTENT){
@@ -87,7 +82,7 @@ public class AuthController {
             return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.connecting_server));
-        String response = serverConnectionService.attemptRegister(register_email_textfield.getText(), register_password_textfield.getText());
+        String response = authenticationService.attemptRegister(register_email_textfield.getText(), register_password_textfield.getText());
         if(response.equals("ALREADY_REGISTERED")){
             info_label.setText(lang.getTextLine(Lang.TextLine.already_registered));
         }else if(response.equals("EMAIL_SENT")){
@@ -108,11 +103,11 @@ public class AuthController {
     }
 
     private Lang lang;
-    private ServerConnectionService serverConnectionService;
+    private AuthenticationService authenticationService;
 
-    public AuthController(Lang lang, ServerConnectionService serverConnectionService) {
+    public AuthController(Lang lang, AuthenticationService serverConnectionService) {
         this.lang = lang;
-        this.serverConnectionService = serverConnectionService;
+        this.authenticationService = serverConnectionService;
     }
 
     ObservableList<Lang.Language> languageObservableList = null;

@@ -1,6 +1,7 @@
-package FinanceManager_V2.database;
+package FinanceManager_V2.database.Repositories;
 
 import FinanceManager_V2.database.entity.Transaction;
+import FinanceManager_V2.database.entity.database_pk.TransactionPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, TransactionPK> {
     //@Modifying
     //@Query("DELETE FROM Transaction WHERE note LIKE '%test'")
    // public void deleteTests();

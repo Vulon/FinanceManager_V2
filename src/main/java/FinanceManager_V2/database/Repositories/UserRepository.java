@@ -1,4 +1,4 @@
-package FinanceManager_V2.database;
+package FinanceManager_V2.database.Repositories;
 
 import FinanceManager_V2.database.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
