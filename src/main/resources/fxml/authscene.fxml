@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="main_pane" minHeight="460.0" minWidth="600.0" prefHeight="460.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FinanceManager_V2.interface_controllers.AuthController">
+<BorderPane fx:id="main_pane" minHeight="460.0" minWidth="600.0" prefHeight="460.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FinanceManager_V2.Interface_controllers.AuthController">
    <center>
       <StackPane fx:id="stack_pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="560.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>

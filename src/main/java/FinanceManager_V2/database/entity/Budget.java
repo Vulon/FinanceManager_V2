@@ -1,6 +1,6 @@
-package FinanceManager_V2.database.entity;
+package FinanceManager_V2.Database.Entity;
 
-import FinanceManager_V2.database.entity.database_pk.BudgetPK;
+import FinanceManager_V2.Database.Entity.Database_pk.BudgetPK;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,14 +14,14 @@ import java.util.Set;
 public class Budget implements Serializable {
     private static final long serialVersionUID = -5300057576001284517L;
     @Id
-    @Column(name = "budget_id")
+    @Column(name = "budget")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long budget_id;
+    private Long budget;
 
 
     @Id
-    @Column(name = "user_id")
-    private Long user_id;
+    @Column(name = "user")
+    private Long user;
 
 
     @Column(name = "name")
@@ -45,11 +45,11 @@ public class Budget implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "budget_category", joinColumns = {
-            @JoinColumn(name = "budget_id", referencedColumnName = "budget_id"),
-            @JoinColumn(name = "budget_user", referencedColumnName = "user_id")
+            @JoinColumn(name = "budget", referencedColumnName = "budget"),
+            @JoinColumn(name = "budget_user", referencedColumnName = "user")
     }, inverseJoinColumns = {
-            @JoinColumn(name = "category_id", referencedColumnName = "category_id"),
-            @JoinColumn(name = "category_user", referencedColumnName = "user_id")
+            @JoinColumn(name = "category", referencedColumnName = "category"),
+            @JoinColumn(name = "category_user", referencedColumnName = "user")
     })
 
     private Set<Category> categories = new HashSet<>();
@@ -59,7 +59,7 @@ public class Budget implements Serializable {
 
 
     public Budget(Long user_id, String name, Double amount, Date start, Date end, Float notifyLevel, Set<Category> categories) {
-        this.user_id = user_id;
+        this.user = user_id;
         this.name = name;
         this.amount = amount;
         this.start = start;
@@ -69,7 +69,7 @@ public class Budget implements Serializable {
     }
 
     public Budget(Long user_id, String name, Double amount, Date start, Date end, Set<Category> categories) {
-        this.user_id = user_id;
+        this.user = user_id;
         this.name = name;
         this.amount = amount;
         this.start = start;
@@ -83,8 +83,8 @@ public class Budget implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Budget budget = (Budget) o;
-        return budget_id.equals(budget.budget_id) &&
-                user_id.equals(budget.user_id) &&
+        return this.budget.equals(budget.budget) &&
+                user.equals(budget.user) &&
                 name.equals(budget.name) &&
                 amount.equals(budget.amount) &&
                 start.equals(budget.start) &&
@@ -95,23 +95,23 @@ public class Budget implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(budget_id, user_id, name, amount, start, end, notifyLevel, categories);
+        return Objects.hash(budget, user, name, amount, start, end, notifyLevel, categories);
     }
 
-    public Long getBudget_id() {
-        return budget_id;
+    public Long getBudget() {
+        return budget;
     }
 
-    public void setBudget_id(Long budget_id) {
-        this.budget_id = budget_id;
+    public void setBudget(Long budget) {
+        this.budget = budget;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser(Long user) {
+        this.user = user;
     }
 
     public Set<Category> getCategories() {

@@ -1,8 +1,8 @@
 package FinanceManager_V2;
 
-import FinanceManager_V2.database.Repositories.CategoryRepository;
-import FinanceManager_V2.database.Repositories.TransactionRepository;
-import FinanceManager_V2.interface_controllers.AuthController;
+import FinanceManager_V2.Database.Repositories.CategoryRepository;
+import FinanceManager_V2.Database.Repositories.TransactionRepository;
+import FinanceManager_V2.Interface_controllers.AuthController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

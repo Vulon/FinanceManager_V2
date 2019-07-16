@@ -1,4 +1,4 @@
-package FinanceManager_V2.database.entity;
+package FinanceManager_V2.Database.Entity;
 
 
 import FinanceManager_V2.TransportableDataObjects.TokenData;
@@ -6,8 +6,6 @@ import FinanceManager_V2.TransportableDataObjects.TokenData;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -38,6 +36,10 @@ public class User implements Serializable {
 
     @Column(name = "refresh_token_exp")
     private Date refresh_token_exp;
+
+    @Column(name = "last_update")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date last_update;
 
 
 
@@ -108,5 +110,13 @@ public class User implements Serializable {
     }
     public Date getRefresh_token_exp() {
         return refresh_token_exp;
+    }
+
+    public Date getLast_update() {
+        return last_update;
+    }
+
+    public void setLast_update(Date last_update) {
+        this.last_update = last_update;
     }
 }

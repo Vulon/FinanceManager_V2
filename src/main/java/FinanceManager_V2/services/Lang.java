@@ -1,9 +1,7 @@
-package FinanceManager_V2.services;
+package FinanceManager_V2.Services;
 
 
 import FinanceManager_V2.MainApplication;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,9 +11,7 @@ import org.w3c.dom.NodeList;
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.beans.ConstructorProperties;
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 
 @Service

@@ -1,4 +1,4 @@
-package FinanceManager_V2.interface_controllers;
+package FinanceManager_V2.Interface_controllers;
 
 
 import org.springframework.stereotype.Component;

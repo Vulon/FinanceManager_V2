@@ -1,6 +1,6 @@
-package FinanceManager_V2.database.entity;
+package FinanceManager_V2.Database.Entity;
 
-import FinanceManager_V2.database.entity.database_pk.TransactionPK;
+import FinanceManager_V2.Database.Entity.Database_pk.TransactionPK;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "transaction_action")
 @IdClass(TransactionPK.class)
-public class TransactionAction implements Serializable {
+public class TransactionAction extends Action implements Serializable {
 
     private static final long serialVersionUID = 8921236138362380586L;
     @Column(name = "is_create")
@@ -23,12 +23,12 @@ public class TransactionAction implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "transaction_id")
-    private Long transaction_id;
+    @Column(name = "transaction")
+    private Long transaction;
 
     @Id
-    @Column(name = "user_id")
-    private Long user_id;
+    @Column(name = "user")
+    private Long user;
 
     @Column(name = "amount")
     private Double amount;
@@ -41,13 +41,13 @@ public class TransactionAction implements Serializable {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "category_id")
+    @Column(name = "category")
     private Long category_id;
 
     public TransactionAction(boolean isCreate, Date commitDate, Long user_id, Double amount, Date date, String note, Long category_id) {
         this.isCreate = isCreate;
         this.commitDate = commitDate;
-        this.user_id = user_id;
+        this.user = user_id;
         this.amount = amount;
         this.date = date;
         this.note = note;
@@ -57,11 +57,11 @@ public class TransactionAction implements Serializable {
     public TransactionAction(boolean isCreate, Date commitDate, Transaction transaction) {
         this.isCreate = isCreate;
         this.commitDate = commitDate;
-        this.user_id = transaction.getUser_id();
+        this.user = transaction.getUser();
         this.amount = transaction.getAmount();
         this.date = transaction.getDate();
         this.note = transaction.getNote();
-        this.category_id = transaction.getCategory().getCategory_id();
+        this.category_id = transaction.getCategory().getCategory();
     }
 
     public TransactionAction() {
@@ -74,8 +74,8 @@ public class TransactionAction implements Serializable {
         TransactionAction that = (TransactionAction) o;
         return isCreate == that.isCreate &&
                 Objects.equals(commitDate, that.commitDate) &&
-                Objects.equals(transaction_id, that.transaction_id) &&
-                Objects.equals(user_id, that.user_id) &&
+                Objects.equals(transaction, that.transaction) &&
+                Objects.equals(user, that.user) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(date, that.date) &&
                 Objects.equals(note, that.note) &&
@@ -84,7 +84,12 @@ public class TransactionAction implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isCreate, commitDate, transaction_id, user_id, amount, date, note, category_id);
+        return Objects.hash(isCreate, commitDate, transaction, user, amount, date, note, category_id);
+    }
+
+    @Override
+    public String getType() {
+        return "transaction";
     }
 
     public boolean isCreate() {
@@ -103,20 +108,20 @@ public class TransactionAction implements Serializable {
         this.commitDate = commitDate;
     }
 
-    public Long getTransaction_id() {
-        return transaction_id;
+    public Long getTransaction() {
+        return transaction;
     }
 
-    public void setTransaction_id(Long transaction_id) {
-        this.transaction_id = transaction_id;
+    public void setTransaction(Long transaction) {
+        this.transaction = transaction;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser(Long user) {
+        this.user = user;
     }
 
     public Double getAmount() {

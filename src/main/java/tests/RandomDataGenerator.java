@@ -1,9 +1,8 @@
 package tests;
 
-import FinanceManager_V2.MainApplication;
-import FinanceManager_V2.database.entity.Category;
-import FinanceManager_V2.database.entity.Transaction;
-import FinanceManager_V2.database.entity.User;
+import FinanceManager_V2.Database.Entity.Category;
+import FinanceManager_V2.Database.Entity.Transaction;
+import FinanceManager_V2.Database.Entity.User;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package FinanceManager_V2.services;
+package FinanceManager_V2.Services;
 
 
 import org.springframework.stereotype.Service;

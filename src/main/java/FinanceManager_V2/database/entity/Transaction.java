@@ -1,6 +1,6 @@
-package FinanceManager_V2.database.entity;
+package FinanceManager_V2.Database.Entity;
 
-import FinanceManager_V2.database.entity.database_pk.TransactionPK;
+import FinanceManager_V2.Database.Entity.Database_pk.TransactionPK;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,12 +14,12 @@ public class Transaction implements Serializable {
     private static final long serialVersionUID = -5744874026510540290L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "transaction_id")
-    private Long transaction_id;
+    @Column(name = "transaction")
+    private Long transaction;
 
     @Id
-    @Column(name = "user_id")
-    private Long user_id;
+    @Column(name = "user")
+    private Long user;
 
     @Column(name = "amount")
     private Double amount;
@@ -35,9 +35,8 @@ public class Transaction implements Serializable {
     @OneToOne
     private Category category;
 
-
     public Transaction(Long user_id, Double amount, Date date, String note, Category category) {
-        this.user_id = user_id;
+        this.user = user_id;
         this.amount = amount;
         this.date = date;
         this.note = note;
@@ -51,8 +50,8 @@ public class Transaction implements Serializable {
     @Override
     public String toString() {
         return "Transaction{" +
-                "transaction_id=" + transaction_id +
-                ", user_id=" + user_id +
+                "transaction=" + transaction +
+                ", user=" + user +
                 ", amount=" + amount +
                 ", date=" + date +
                 ", note='" + note + '\'' +
@@ -65,8 +64,8 @@ public class Transaction implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return transaction_id.equals(that.transaction_id) &&
-                user_id.equals(that.user_id) &&
+        return transaction.equals(that.transaction) &&
+                user.equals(that.user) &&
                 amount.equals(that.amount) &&
                 date.equals(that.date) &&
                 Objects.equals(note, that.note) &&
@@ -75,23 +74,23 @@ public class Transaction implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(transaction_id, user_id, amount, date, note, category);
+        return Objects.hash(transaction, user, amount, date, note, category);
     }
 
-    public Long getTransaction_id() {
-        return transaction_id;
+    public Long getTransaction() {
+        return transaction;
     }
 
-    public void setTransaction_id(Long transaction_id) {
-        this.transaction_id = transaction_id;
+    public void setTransaction(Long transaction) {
+        this.transaction = transaction;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser(Long user) {
+        this.user = user;
     }
 
     public Double getAmount() {

@@ -1,7 +1,7 @@
-package FinanceManager_V2.interface_controllers;
+package FinanceManager_V2.Interface_controllers;
 
-import FinanceManager_V2.services.AuthenticationService;
-import FinanceManager_V2.services.Lang;
+import FinanceManager_V2.Services.AuthenticationService;
+import FinanceManager_V2.Services.Lang;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -49,20 +49,21 @@ public class AuthController {
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.connecting_server));
 
-        HttpStatus httpStatus = authenticationService.attemptLogin(login_email_textfield.getText(),
+        AuthenticationService.ServerResponseCode code = authenticationService.attemptLogin(login_email_textfield.getText(),
                 login_password_textfield.getText());
 
-        if(httpStatus  == HttpStatus.NO_CONTENT){
+        if(code == AuthenticationService.ServerResponseCode.USER_NOT_FOUND){
             info_label.setText(lang.getTextLine(Lang.TextLine.user_not_found));
             return;
         }
-        if(httpStatus == HttpStatus.CREATED){ //Email not verified
+        if(code == AuthenticationService.ServerResponseCode.EMAIL_NOT_VERIFIED){ //Email not verified
             info_label.setText(lang.getTextLine(Lang.TextLine.email_not_verified));
             return;
         }
-        if(httpStatus == HttpStatus.OK){
+        if(code == AuthenticationService.ServerResponseCode.OK){
             //SUCCESS
-
+            info_label.setText("SUCCESSFUL");
+            return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.server_error));
     }
@@ -82,10 +83,10 @@ public class AuthController {
             return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.connecting_server));
-        String response = authenticationService.attemptRegister(register_email_textfield.getText(), register_password_textfield.getText());
-        if(response.equals("ALREADY_REGISTERED")){
+        AuthenticationService.ServerResponseCode code = authenticationService.attemptRegister(register_email_textfield.getText(), register_password_textfield.getText());
+        if(code == AuthenticationService.ServerResponseCode.ALREADY_REGISTERED){
             info_label.setText(lang.getTextLine(Lang.TextLine.already_registered));
-        }else if(response.equals("EMAIL_SENT")){
+        }else if(code == AuthenticationService.ServerResponseCode.OK){
             info_label.setText(lang.getTextLine(Lang.TextLine.check_your_email));
             toggle_login();
         }else{
