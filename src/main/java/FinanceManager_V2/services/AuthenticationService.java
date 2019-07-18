@@ -9,16 +9,20 @@ import FinanceManager_V2.Database.Repositories.UserRepository;
 import FinanceManager_V2.Database.Entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Instant;
+import java.util.Date;
+
 @Service
 public class AuthenticationService {
     public User user;
     public TokenData tokenData;
-    private final String url = "http://localhost:8081";
+    public final String url = "http://localhost:8081";
 
     public static enum ServerResponseCode {
         OK,
@@ -84,6 +88,8 @@ public class AuthenticationService {
             System.out.println(responseEntity.getBody());
         }catch (HttpStatusCodeException e){
             return mapHttpStatus(e.getStatusCode());
+        }catch (Exception e){
+            return ServerResponseCode.CONNECTION_TIMEOUT;
         }
 
         return mapHttpStatus(HttpStatus.OK);
@@ -101,6 +107,8 @@ public class AuthenticationService {
             responseEntity = restTemplate.getForEntity(builder.toUriString(), TokenData.class);
         }catch (HttpStatusCodeException e){
             return mapHttpStatus(e.getStatusCode());
+        }catch (Exception e){
+            return ServerResponseCode.CONNECTION_TIMEOUT;
         }
         if(responseEntity.getStatusCode() == HttpStatus.OK){
             user = userRepository.findByEmail(email);
@@ -114,8 +122,31 @@ public class AuthenticationService {
             }else{
                 user.setTokenData(getTokenData());
             }
+            setUserId(user.getId());
             userRepository.updateTokens(user.getId(), getTokenData().getAccess_token(), getTokenData().getAccess_token_expire_date(),
                     getTokenData().getRefresh_token(), getTokenData().getRefresh_token_expire_date());
+            return ServerResponseCode.OK;
+        }
+        return ServerResponseCode.UNKNOWN;
+    }
+
+    public ServerResponseCode attemptRefresh(@Nullable String refreshToken){
+        if(refreshToken == null){
+            refreshToken = getTokenData().getRefresh_token();
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + "/api/refresh");
+        builder.queryParam("refresh_token", refreshToken);
+        ResponseEntity<TokenData> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity(builder.toUriString(), TokenData.class);
+        }catch (HttpStatusCodeException e){
+            return mapHttpStatus(e.getStatusCode());
+        }catch (Exception e){
+            return ServerResponseCode.CONNECTION_TIMEOUT;
+        }
+        if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
+            setTokenData(responseEntity.getBody());
             return ServerResponseCode.OK;
         }
         return ServerResponseCode.UNKNOWN;
@@ -129,18 +160,32 @@ public class AuthenticationService {
         return response.getStatusCode();
     }
 
-    public synchronized Long getUserId() {
+    synchronized Long getUserId() {
         return user.getId();
     }
 
-    public synchronized void setUserId(Long userId) {
-        this.user.setId(userId);
+    void setUserId(Long userId) {
+        synchronized (this.user){
+            this.user.setId(userId);
+        }
     }
 
-    public String getUserPassword(){
+    synchronized Date getLastUpdateDate(){
+        if (user.getLast_update() == null){
+            return Date.from(Instant.MIN);
+        }else{
+            return user.getLast_update();
+        }
+    }
+
+    public boolean isInitialized(){
+        return user != null && tokenData != null;
+    }
+
+    String getUserPassword(){
         return user.getPassword();
     }
-    public String getUserEmail(){
+    String getUserEmail(){
         return user.getEmail();
     }
 }

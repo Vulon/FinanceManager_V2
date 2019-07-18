@@ -67,6 +67,14 @@ public class Budget implements Serializable {
         this.notifyLevel = notifyLevel;
         this.categories = categories;
     }
+    public Budget(BudgetAction action){
+        this.name = action.getName();
+        this.amount = action.getAmount();
+        this.start = action.getStart();
+        this.end = action.getEnd();
+        this.notifyLevel = action.getNotifyLevel();
+        this.categories = action.getCategories();
+    }
 
     public Budget(Long user_id, String name, Double amount, Date start, Date end, Set<Category> categories) {
         this.user = user_id;

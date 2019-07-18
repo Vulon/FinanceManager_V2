@@ -27,6 +27,13 @@ public class TokenData implements Serializable {
     public TokenData() {
     }
 
+    public TokenData(TokenData other){
+        this.access_token = other.access_token;
+        this.refresh_token = other.refresh_token;
+        this.access_token_expire_date = other.access_token_expire_date;
+        this.refresh_token_expire_date = other.refresh_token_expire_date;
+    }
+
     public void setAccess_token(String access_token) {
         this.access_token = access_token;
     }

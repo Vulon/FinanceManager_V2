@@ -42,6 +42,13 @@ public class Transaction implements Serializable {
         this.note = note;
         this.category = category;
     }
+    public Transaction(TransactionAction action, Category category){
+        this.user = action.getUser();
+        this.amount = action.getAmount();
+        this.date = action.getDate();
+        this.note = action.getNote();
+        this.category = category;
+    }
 
     public Transaction() {
     }

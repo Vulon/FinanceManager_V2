@@ -1,6 +1,7 @@
 package FinanceManager_V2.Interface_controllers;
 
 import FinanceManager_V2.Services.AuthenticationService;
+import FinanceManager_V2.Services.CachedActionsManager;
 import FinanceManager_V2.Services.Lang;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,6 +64,7 @@ public class AuthController {
         if(code == AuthenticationService.ServerResponseCode.OK){
             //SUCCESS
             info_label.setText("SUCCESSFUL");
+            cachedActionsManager.processUpdates();
             return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.server_error));
@@ -105,10 +107,12 @@ public class AuthController {
 
     private Lang lang;
     private AuthenticationService authenticationService;
+    private CachedActionsManager cachedActionsManager;
 
-    public AuthController(Lang lang, AuthenticationService serverConnectionService) {
+    public AuthController(Lang lang, AuthenticationService serverConnectionService, CachedActionsManager cachedActionsManager) {
         this.lang = lang;
         this.authenticationService = serverConnectionService;
+        this.cachedActionsManager = cachedActionsManager;
     }
 
     ObservableList<Lang.Language> languageObservableList = null;

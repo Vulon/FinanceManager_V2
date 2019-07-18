@@ -13,11 +13,11 @@ import java.util.Set;
 @Entity
 @Table(name = "budget_action")
 @IdClass(BudgetPK.class)
-public class BudgetAction extends Action implements Serializable {
+public class BudgetAction implements Serializable, Action {
 
     private static final long serialVersionUID = 574580749152845095L;
-    @Column(name = "is_create")
-    private boolean isCreate;
+    @Column(name = "create")
+    private boolean create;
 
     @Column(name = "commit_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,7 +65,7 @@ public class BudgetAction extends Action implements Serializable {
     private Set<Category> categories = new HashSet<>();
 
     public BudgetAction(boolean isCreate, Date commitDate, Long user_id, String name, Double amount, Date start, Date end, Float notifyLevel, Set<Category> categories) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.user = user_id;
         this.name = name;
@@ -80,7 +80,7 @@ public class BudgetAction extends Action implements Serializable {
     }
 
     public BudgetAction(boolean isCreate, Date commitDate, Budget budget) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.user = budget.getUser();
         this.name = budget.getName();
@@ -98,12 +98,12 @@ public class BudgetAction extends Action implements Serializable {
 
     @Override
     public boolean isCreate() {
-        return isCreate;
+        return create;
     }
 
     @Override
     public void setCreate(boolean create) {
-        isCreate = create;
+        this.create = create;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class BudgetAction extends Action implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BudgetAction that = (BudgetAction) o;
-        return isCreate == that.isCreate &&
+        return create == that.create &&
                 Objects.equals(commitDate, that.commitDate) &&
                 Objects.equals(budget, that.budget) &&
                 Objects.equals(user, that.user) &&
@@ -135,7 +135,7 @@ public class BudgetAction extends Action implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isCreate, commitDate, budget, user, name, amount, start, end, notifyLevel, categories);
+        return Objects.hash(create, commitDate, budget, user, name, amount, start, end, notifyLevel, categories);
     }
 
 

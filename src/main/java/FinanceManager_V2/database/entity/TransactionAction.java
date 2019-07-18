@@ -11,11 +11,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "transaction_action")
 @IdClass(TransactionPK.class)
-public class TransactionAction extends Action implements Serializable {
+public class TransactionAction implements Serializable, Action {
 
     private static final long serialVersionUID = 8921236138362380586L;
-    @Column(name = "is_create")
-    private boolean isCreate;
+    @Column(name = "create")
+    private boolean create;
 
     @Column(name = "commit_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -45,7 +45,7 @@ public class TransactionAction extends Action implements Serializable {
     private Long category_id;
 
     public TransactionAction(boolean isCreate, Date commitDate, Long user_id, Double amount, Date date, String note, Long category_id) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.user = user_id;
         this.amount = amount;
@@ -55,7 +55,7 @@ public class TransactionAction extends Action implements Serializable {
     }
 
     public TransactionAction(boolean isCreate, Date commitDate, Transaction transaction) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.user = transaction.getUser();
         this.amount = transaction.getAmount();
@@ -72,7 +72,7 @@ public class TransactionAction extends Action implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TransactionAction that = (TransactionAction) o;
-        return isCreate == that.isCreate &&
+        return create == that.create &&
                 Objects.equals(commitDate, that.commitDate) &&
                 Objects.equals(transaction, that.transaction) &&
                 Objects.equals(user, that.user) &&
@@ -84,7 +84,7 @@ public class TransactionAction extends Action implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isCreate, commitDate, transaction, user, amount, date, note, category_id);
+        return Objects.hash(create, commitDate, transaction, user, amount, date, note, category_id);
     }
 
     @Override
@@ -93,11 +93,11 @@ public class TransactionAction extends Action implements Serializable {
     }
 
     public boolean isCreate() {
-        return isCreate;
+        return create;
     }
 
     public void setCreate(boolean create) {
-        isCreate = create;
+        this.create = create;
     }
 
     public Date getCommitDate() {

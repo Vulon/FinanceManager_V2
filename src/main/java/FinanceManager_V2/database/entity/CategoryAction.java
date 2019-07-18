@@ -12,11 +12,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "category_action")
 @IdClass(CategoryPK.class)
-public class CategoryAction extends Action implements Serializable {
+public class CategoryAction implements Serializable, Action {
 
     private static final long serialVersionUID = -7163736650756578806L;
-    @Column(name = "is_create")
-    private boolean isCreate;
+    @Column(name = "create")
+    private boolean create;
 
     @Column(name = "commit_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,7 +43,7 @@ public class CategoryAction extends Action implements Serializable {
     private Long parent_id;
 
     public CategoryAction(boolean isCreate, Date commitDate, Long category_id, Long user_id, String color, String name, Integer icon_id, Long parent_id) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.category = category_id;
         this.user = user_id;
@@ -57,7 +57,7 @@ public class CategoryAction extends Action implements Serializable {
     }
 
     public CategoryAction(boolean isCreate, Date commitDate, Category category) {
-        this.isCreate = isCreate;
+        this.create = isCreate;
         this.commitDate = commitDate;
         this.category = category.getCategory();
         this.user = category.getUser();
@@ -72,7 +72,7 @@ public class CategoryAction extends Action implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CategoryAction that = (CategoryAction) o;
-        return isCreate == that.isCreate &&
+        return create == that.create &&
                 Objects.equals(commitDate, that.commitDate) &&
                 Objects.equals(category, that.category) &&
                 Objects.equals(user, that.user) &&
@@ -84,7 +84,7 @@ public class CategoryAction extends Action implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isCreate, commitDate, category, user, color, name, icon_id, parent_id);
+        return Objects.hash(create, commitDate, category, user, color, name, icon_id, parent_id);
     }
 
     @Override
@@ -93,11 +93,11 @@ public class CategoryAction extends Action implements Serializable {
     }
 
     public boolean isCreate() {
-        return isCreate;
+        return create;
     }
 
     public void setCreate(boolean create) {
-        isCreate = create;
+        this.create = create;
     }
 
     public Date getCommitDate() {

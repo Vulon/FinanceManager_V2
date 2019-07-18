@@ -8,11 +8,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, CategoryPK> {
+
+    @Query
+    Category getByUserAndCategory(Long user_id, Long category_id);
+
+    @Query
+    ArrayList<Category> getAllByUserAndAndParent(Long user, Category parent);
+
     @Modifying
     @Transactional
-    @Query("DELETE FROM Category c WHERE c.id NOT IN (SELECT t.category.id FROM Transaction t)")
-    public int deleteUnused();
+    @Query
+    void deleteByUserAndCategory(Long user, Long category);
 }

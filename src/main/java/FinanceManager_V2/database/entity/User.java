@@ -5,6 +5,7 @@ import FinanceManager_V2.TransportableDataObjects.TokenData;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -49,6 +50,7 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.lang = lang;
+        last_update = Date.from(Instant.now());
     }
 
     public User() {

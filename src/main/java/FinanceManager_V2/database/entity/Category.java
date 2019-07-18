@@ -48,6 +48,13 @@ public class Category implements Serializable {
         this.icon_id = icon_id;
         this.parent = parent;
     }
+    public Category(CategoryAction action, Category parent){
+        this.user = action.getUser();
+        this.color = action.getColor();
+        this.name = action.getName();
+        this.icon_id = action.getIcon_id();
+        this.parent = parent;
+    }
 
     public Category getParent() {
         return parent;
