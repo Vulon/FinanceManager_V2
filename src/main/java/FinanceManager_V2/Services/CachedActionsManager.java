@@ -5,8 +5,11 @@ import FinanceManager_V2.Database.Entity.*;
 import FinanceManager_V2.Database.Repositories.*;
 
 
+import FinanceManager_V2.Events.DataChangedEvent;
 import FinanceManager_V2.TransportableDataObjects.ActionQueue;
 import FinanceManager_V2.TransportableDataObjects.TokenData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -29,12 +32,15 @@ public class CachedActionsManager {
     private ActionQueue cachedActions;
     private ServerDataManager serverDataManager;
 
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private ServerConnectionThread connectionThread;
 
+
+
     private boolean isThreadActive;
 
-    public CachedActionsManager(BudgetActionRepository budgetActionRepository, TransactionActionRepository transactionActionRepository, CategoryActionRepository categoryActionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, TransactionRepository transactionRepository, ThreadPoolTaskExecutor threadPoolTaskExecutor, AuthenticationService authenticationService) {
+    public CachedActionsManager(BudgetActionRepository budgetActionRepository, TransactionActionRepository transactionActionRepository, CategoryActionRepository categoryActionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, TransactionRepository transactionRepository, ThreadPoolTaskExecutor threadPoolTaskExecutor, AuthenticationService authenticationService, ServerDataManager serverDataManager, ApplicationEventPublisher applicationEventPublisher) {
         this.budgetActionRepository = budgetActionRepository;
         this.transactionActionRepository = transactionActionRepository;
         this.categoryActionRepository = categoryActionRepository;
@@ -43,6 +49,8 @@ public class CachedActionsManager {
         this.transactionRepository = transactionRepository;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.authenticationService = authenticationService;
+        this.serverDataManager = serverDataManager;
+        this.applicationEventPublisher = applicationEventPublisher;
         cachedActions = new ActionQueue();
         setThreadActive(false);
     }
@@ -64,9 +72,12 @@ public class CachedActionsManager {
         private ActionQueue localQueue;
         private TokenData tokenData;
 
+        DataChangedEvent dataChangedEvent;
+
         @Override
         public void run() {
             setThreadActive(true);
+            dataChangedEvent = new DataChangedEvent(this, false, false, false);
             System.out.println("Server connection thread started");
             localQueue = new ActionQueue();
             localQueue.setBudgetActions(budgetActionRepository.getAllByUser(authenticationService.getUserId()));
@@ -79,15 +90,21 @@ public class CachedActionsManager {
 
             if (!isAccessTokenValid()){
                 setThreadActive(false);
+                System.out.println("CachedActionsManager: token not valid");
                 return;
             }
+            System.out.println("CachedActionsManager: token valid");
             //get updates from server
-            ActionQueue updatesQueue = serverDataManager.getLastUpdates(tokenData.getAccess_token(), authenticationService.getLastUpdateDate());
+            ActionQueue updatesQueue = serverDataManager.getLastUpdates(
+                    tokenData.getAccess_token(),
+                    authenticationService.getLastUpdateDate());
             if(updatesQueue == null || serverDataManager.lastResponseCode != AuthenticationService.ServerResponseCode.OK){
                 //Server did not return correct answer
                 setThreadActive(false);
+                System.out.println("CachedActionsManager: error getting updates server response code " + serverDataManager.lastResponseCode.toString());
                 return;
             }
+            System.out.println("CachedActionsManager: getLastUpdates server code OK");
             try{
                 processActionQueue(updatesQueue);
             }catch (DatabaseUpdateException e){ //TODO send message, and try to get updates again
@@ -95,13 +112,17 @@ public class CachedActionsManager {
                 setThreadActive(false);
                 return;
             }
+            System.out.println("CachedActionsManager: Finished processing updates");
+
             //post updates to server and get back completed ones
             ActionQueue completedUpdates = serverDataManager.postUpdates(localQueue, tokenData.getAccess_token());
             if(completedUpdates == null || serverDataManager.lastResponseCode != AuthenticationService.ServerResponseCode.OK){
                 //Server did not return correct answer
                 setThreadActive(false);
+                System.out.println("CachedActionsManager: error posting updates server response code " + serverDataManager.lastResponseCode.toString());
                 return;
             }
+            System.out.println("CachedActionsManager: Finished posting updates");
             try{
                 processActionQueue(completedUpdates);
             }catch (DatabaseUpdateException e){
@@ -113,10 +134,13 @@ public class CachedActionsManager {
 
             }
             clearActionRepositories(completedUpdates.getActionsQueue(), null);
+            applicationEventPublisher.publishEvent(dataChangedEvent);
+            dataChangedEvent = null;
             setThreadActive(false);
         }
 
         private void clearActionRepositories(Queue<Action> actions, @Nullable Action stopAction){
+            System.out.println("Clearing action repositories");
             while (actions.size() > 0){
                 Action action = actions.remove();
                 switch (action.getType()){
@@ -171,6 +195,7 @@ public class CachedActionsManager {
 
         private void processActionQueue(ActionQueue processableQueue) throws DatabaseUpdateException{
             Queue<Action> queue = processableQueue.getActionsQueue();
+            System.out.println("Started processing queue with size " + queue.size());
             Long userId = authenticationService.getUserId();
             while (queue.size() > 0){
                 Action action = queue.remove();
@@ -181,15 +206,20 @@ public class CachedActionsManager {
                             if(transactionAction.isCreate()){
                                 Category category = categoryRepository.getByUserAndCategory(userId, transactionAction.getCategory_id());
                                 Transaction transaction = new Transaction(transactionAction, category);
+                                transaction.setUser(authenticationService.getUserId());
                                 transactionRepository.saveAndFlush(transaction);
+                                System.out.println("Created transaction " + transaction.toString());
                             }else{
                                 transactionRepository.deleteByUserAndTransaction(userId, transactionAction.getTransaction());
                                 transactionRepository.flush();
+                                System.out.println("Deleted transaction " + transactionAction.toString());
                             }
+                            dataChangedEvent.setTransactionsChanged(true);
                         }catch (Exception e){
                             e.printStackTrace();
                             throw new DatabaseUpdateException(transactionAction.getClass(), action, e.getMessage());
                         }
+
                         break;
                     }
                     case "budget":{
@@ -203,24 +233,36 @@ public class CachedActionsManager {
                                     actualCategories.add(categoryRepository.getByUserAndCategory(userId, category.getCategory()));
                                }
                                budget.setCategories(actualCategories);
+                               budget.setUser(authenticationService.getUserId());
                                budgetRepository.saveAndFlush(budget);
+                                System.out.println("Created budget " + budget.toString());
                             }else{
                                 budgetRepository.deleteByUserAndBudget(userId, budgetAction.getBudget());
                                 budgetRepository.flush();
+                                System.out.println("Deleted budget " + budgetAction.toString());
                             }
+                            dataChangedEvent.setBudgetsChanged(true);
                         }catch (Exception e){
                             e.printStackTrace();
                             throw new DatabaseUpdateException(budgetAction.getClass(), action, e.getMessage());
                         }
+
                         break;
                     }
                     case "category":{
                         CategoryAction categoryAction = (CategoryAction)action;
                         try{
                             if(categoryAction.isCreate()){
-                                Category parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
-                                Category category = new Category(categoryAction, parent);
+                                Category category;
+                                if(categoryAction.getParent_id() < 0){
+                                    category = new Category(categoryAction, null);
+                                }else{
+                                    Category parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
+                                    category = new Category(categoryAction, parent);
+                                }
+                                category.setUser(authenticationService.getUserId());
                                 categoryRepository.saveAndFlush(category);
+                                System.out.println("Created category " + category.toString());
                             }else{
                                 Category parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
                                 Category thisCategory = categoryRepository.getByUserAndCategory(userId, categoryAction.getCategory());
@@ -246,11 +288,14 @@ public class CachedActionsManager {
                                 }
                                 categoryRepository.deleteByUserAndCategory(userId, thisCategory.getCategory());
                                 categoryRepository.flush();
+                                System.out.println("Deleted category " + categoryAction.toString());
                             }
+                            dataChangedEvent.setCategoriesChanged(true);
                         }catch (Exception e){
                             e.printStackTrace();
                             throw new DatabaseUpdateException(categoryAction.getClass(), action, e.getMessage());
                         }
+
                     }
                 }
             }
@@ -318,6 +363,7 @@ public class CachedActionsManager {
             }
         }
     }
+
 
     public void cacheAction(Action action, Class actionClass){
         if(actionClass.equals(CategoryAction.class)){

@@ -56,6 +56,7 @@ public class TransactionAction implements Serializable, Action {
 
     public TransactionAction(boolean isCreate, Date commitDate, Transaction transaction) {
         this.create = isCreate;
+        this.transaction = transaction.getTransaction();
         this.commitDate = commitDate;
         this.user = transaction.getUser();
         this.amount = transaction.getAmount();
@@ -65,6 +66,20 @@ public class TransactionAction implements Serializable, Action {
     }
 
     public TransactionAction() {
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionAction{" +
+                "create=" + create +
+                ", commitDate=" + commitDate +
+                ", transaction=" + transaction +
+                ", user=" + user +
+                ", amount=" + amount +
+                ", date=" + date +
+                ", note='" + note + '\'' +
+                ", category_id=" + category_id +
+                '}';
     }
 
     @Override

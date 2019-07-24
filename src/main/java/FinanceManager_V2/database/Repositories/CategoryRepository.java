@@ -23,4 +23,7 @@ public interface CategoryRepository extends JpaRepository<Category, CategoryPK> 
     @Transactional
     @Query
     void deleteByUserAndCategory(Long user, Long category);
+
+    @Query
+    ArrayList<Category> findAllByUser(Long user);
 }

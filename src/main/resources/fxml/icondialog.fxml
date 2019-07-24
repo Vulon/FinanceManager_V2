@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+
+<GridPane fx:id="main_pane" minHeight="300.0" minWidth="450.0" prefHeight="300.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FinanceManager_V2.Interface_controllers.IconDialogController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.9999755859375" minWidth="10.0" prefWidth="234.79996337890626" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="248.79999999999998" minWidth="10.0" prefWidth="215.60003662109372" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="260.3999542236328" minHeight="10.0" prefHeight="243.59998168945313" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="155.60001220703126" minHeight="10.0" prefHeight="57.20001831054688" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <Button fx:id="ok_button" mnemonicParsing="false" text="OK" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" onAction="#handle_save">
+         <GridPane.margin>
+            <Insets right="30.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="cancel_button" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" onAction="#handle_cancel">
+         <GridPane.margin>
+            <Insets left="30.0" />
+         </GridPane.margin>
+      </Button>
+      <GridPane fx:id="icon_pane" GridPane.columnSpan="2">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.79998779296875" minWidth="10.0" prefWidth="233.79998779296875" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="229.0" minWidth="10.0" prefWidth="216.20001220703125" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+      </GridPane>
+   </children>
+</GridPane>

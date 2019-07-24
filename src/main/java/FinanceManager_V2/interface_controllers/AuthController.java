@@ -1,11 +1,13 @@
 package FinanceManager_V2.Interface_controllers;
 
+import FinanceManager_V2.MainApplication;
 import FinanceManager_V2.Services.AuthenticationService;
 import FinanceManager_V2.Services.CachedActionsManager;
 import FinanceManager_V2.Services.Lang;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -17,7 +19,9 @@ import java.util.regex.Pattern;
 
 @Component
 public class AuthController {
-    @FXML    BorderPane main_pane;
+    MainApplication mainApplication;
+
+    @FXML    public BorderPane main_pane;
     @FXML    StackPane stack_pane;
     @FXML    AnchorPane register_pane;
     @FXML    AnchorPane login_pane;
@@ -37,6 +41,10 @@ public class AuthController {
 
     @FXML    ChoiceBox lang_picker;
     @FXML    Label info_label;
+
+    public void setUpMainApp(MainApplication mainApp){
+        mainApplication = mainApp;
+    }
 
     @FXML public void handle_login(){
         info_label.setVisible(true);
@@ -65,6 +73,7 @@ public class AuthController {
             //SUCCESS
             info_label.setText("SUCCESSFUL");
             cachedActionsManager.processUpdates();
+            mainApplication.startNewScene(MainController.class);
             return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.server_error));

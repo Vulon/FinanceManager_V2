@@ -72,7 +72,7 @@ public class Lang {
                 Element e = (Element)node;
                 System.out.println("FOUND " + e.getAttribute("id"));
                 if(e.getAttribute("id").equals(language.name())){
-                    System.out.println("BREAKING AT" + e.getAttribute("id"));
+                    System.out.println("BREAKING AT " + e.getAttribute("id"));
                     break;
                 }
             }

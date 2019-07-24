@@ -3,12 +3,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -17,7 +21,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="700.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="700.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FinanceManager_V2.Interface_controllers.MainController">
    <left>
       <VBox prefHeight="600.0" prefWidth="126.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -26,15 +30,15 @@
          <children>
             <VBox prefHeight="482.0" prefWidth="126.0" spacing="30.0" VBox.vgrow="ALWAYS">
                <children>
-                  <ToggleButton minWidth="90.0" mnemonicParsing="false" text="Transactions">
+                  <ToggleButton fx:id="main_transactions" minWidth="90.0" mnemonicParsing="false" onAction="#handle_tab_selection" text="Transactions">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ToggleButton>
-                  <ToggleButton minWidth="90.0" mnemonicParsing="false" text="Categories" />
-                  <ToggleButton minWidth="90.0" mnemonicParsing="false" text="Budget" />
-                  <ToggleButton minWidth="90.0" mnemonicParsing="false" text="Connection" />
-                  <ToggleButton minWidth="90.0" mnemonicParsing="false" text="Settings" VBox.vgrow="ALWAYS" />
+                  <ToggleButton fx:id="main_categories" minWidth="90.0" mnemonicParsing="false" onAction="#handle_tab_selection" text="Categories" />
+                  <ToggleButton fx:id="main_budgets" minWidth="90.0" mnemonicParsing="false" onAction="#handle_tab_selection" text="Budget" />
+                  <ToggleButton fx:id="main_connection" minWidth="90.0" mnemonicParsing="false" onAction="#handle_tab_selection" text="Connection" />
+                  <ToggleButton fx:id="main_settings" minWidth="90.0" mnemonicParsing="false" onAction="#handle_tab_selection" text="Settings" VBox.vgrow="ALWAYS" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -43,7 +47,7 @@
                   <Insets left="30.0" right="10.0" top="50.0" />
                </padding>
             </VBox>
-            <ProgressIndicator minHeight="50.0" minWidth="26.0" prefHeight="50.0" prefWidth="26.0" progress="0.0">
+            <ProgressIndicator fx:id="main_progressindicator" minHeight="50.0" minWidth="26.0" prefHeight="50.0" prefWidth="26.0" progress="0.0">
                <VBox.margin>
                   <Insets left="47.0" />
                </VBox.margin>
@@ -52,9 +56,9 @@
       </VBox>
    </left>
    <center>
-      <StackPane minHeight="600.0" minWidth="680.0" prefHeight="600.0" prefWidth="680.0" BorderPane.alignment="CENTER">
+      <StackPane fx:id="stack_pane" minHeight="600.0" minWidth="680.0" prefHeight="600.0" prefWidth="680.0" BorderPane.alignment="CENTER">
          <children>
-            <GridPane fx:id="tr_pane" minHeight="600.0" minWidth="680.0" visible="false" StackPane.alignment="CENTER">
+            <GridPane fx:id="tr_pane" minHeight="600.0" minWidth="680.0" StackPane.alignment="CENTER">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="222.20001220703125" minWidth="10.0" prefWidth="202.7999755859375" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="366.20001220703125" minWidth="10.0" prefWidth="113.20002441406251" />
@@ -70,16 +74,6 @@
                   <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="76.99996337890639" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <DatePicker fx:id="tr_list_date" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets left="20.0" />
-                     </GridPane.margin>
-                  </DatePicker>
-                  <Button fx:id="tr_list_reset" mnemonicParsing="false" prefHeight="26.0" prefWidth="56.0" text="Reset" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets />
-                     </GridPane.margin>
-                  </Button>
                   <ListView fx:id="tr_list" prefHeight="475.0" prefWidth="244.0" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="5" GridPane.vgrow="ALWAYS">
                      <GridPane.margin>
                         <Insets bottom="20.0" left="20.0" />
@@ -100,17 +94,7 @@
                         <Insets left="30.0" />
                      </GridPane.margin>
                   </TextArea>
-                  <ChoiceBox fx:id="tr_choivebox" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets left="30.0" top="20.0" />
-                     </GridPane.margin>
-                  </ChoiceBox>
-                  <Button fx:id="tr_browse" mnemonicParsing="false" text="Browse" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets top="20.0" />
-                     </GridPane.margin>
-                  </Button>
-                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="SOMETIMES">
+                  <HBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="SOMETIMES">
                      <GridPane.margin>
                         <Insets left="30.0" />
                      </GridPane.margin>
@@ -132,6 +116,106 @@
                         </Button>
                      </children>
                   </HBox>
+                  <ComboBox fx:id="tr_category" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets left="30.0" top="20.0" />
+                     </GridPane.margin>
+                  </ComboBox>
+                  <ComboBox fx:id="tr_page" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="20.0" />
+                     </GridPane.margin>
+                  </ComboBox>
+               </children>
+            </GridPane>
+            <GridPane fx:id="ca_pane" visible="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="163.20003509521484" minWidth="10.0" prefWidth="160.0000228881836" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="151.1999771118164" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="354.2000732421875" minWidth="10.0" prefWidth="226.5999267578125" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="229.1999572753906" minWidth="10.0" prefWidth="142.60007324218748" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints maxHeight="84.5999969482422" minHeight="0.0" prefHeight="40.200009155273435" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="196.8" minHeight="10.0" prefHeight="42.40000610351562" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="243.19998931884766" minHeight="10.0" prefHeight="47.199993896484386" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="330.3999877929688" minHeight="10.0" prefHeight="107.19999999999999" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="339.9999938964844" minHeight="10.0" prefHeight="103.20001831054685" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="278.4000427246094" minHeight="10.0" prefHeight="262.39998168945317" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <HBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.valignment="BOTTOM" GridPane.vgrow="NEVER">
+                     <GridPane.margin>
+                        <Insets left="30.0" />
+                     </GridPane.margin>
+                     <children>
+                        <Button fx:id="ca_save" mnemonicParsing="false" text="Save">
+                           <HBox.margin>
+                              <Insets left="10.0" top="20.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="ca_delete" mnemonicParsing="false" text="Delete">
+                           <HBox.margin>
+                              <Insets left="30.0" top="20.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="ca_cancel" mnemonicParsing="false" text="Cancel">
+                           <HBox.margin>
+                              <Insets left="30.0" top="20.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <ListView fx:id="ca_list" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="5" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                     <GridPane.margin>
+                        <Insets bottom="20.0" left="20.0" />
+                     </GridPane.margin>
+                  </ListView>
+                  <RadioButton fx:id="ca_list_income" mnemonicParsing="false" text="Income" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" />
+                     </GridPane.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="ca_list_expense" mnemonicParsing="false" text="Expense" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" />
+                     </GridPane.margin>
+                  </RadioButton>
+                  <ColorPicker fx:id="ca_colorpicker" prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets left="30.0" top="10.0" />
+                     </GridPane.margin>
+                  </ColorPicker>
+                  <TextField fx:id="ca_name" promptText="Name" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" GridPane.vgrow="SOMETIMES">
+                     <GridPane.margin>
+                        <Insets left="30.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <ChoiceBox fx:id="ca_parent" prefHeight="26.0" prefWidth="161.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" left="30.0" />
+                     </GridPane.margin>
+                  </ChoiceBox>
+                  <ImageView fx:id="ca_icon" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                     <GridPane.margin>
+                        <Insets left="50.0" />
+                     </GridPane.margin>
+                  </ImageView>
+                  <Button fx:id="ca_browse" mnemonicParsing="false" text="Browse icons" GridPane.columnIndex="3" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </Button>
+                  <RadioButton fx:id="ca_edit_income" mnemonicParsing="false" text="Income" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </GridPane.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="ca_edit_expense" mnemonicParsing="false" text="Exepnse" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" left="10.0" />
+                     </GridPane.margin>
+                  </RadioButton>
                </children>
             </GridPane>
          </children>

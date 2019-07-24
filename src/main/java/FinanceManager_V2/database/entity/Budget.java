@@ -68,6 +68,7 @@ public class Budget implements Serializable {
         this.categories = categories;
     }
     public Budget(BudgetAction action){
+        this.budget = action.getBudget();
         this.name = action.getName();
         this.amount = action.getAmount();
         this.start = action.getStart();
@@ -99,6 +100,20 @@ public class Budget implements Serializable {
                 end.equals(budget.end) &&
                 notifyLevel.equals(budget.notifyLevel) &&
                 Objects.equals(categories, budget.categories);
+    }
+
+    @Override
+    public String toString() {
+        return "Budget{" +
+                "budget=" + budget +
+                ", user=" + user +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                ", start=" + start +
+                ", end=" + end +
+                ", notifyLevel=" + notifyLevel +
+                ", categories=" + categories +
+                '}';
     }
 
     @Override

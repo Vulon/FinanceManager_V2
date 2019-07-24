@@ -18,4 +18,10 @@ public interface TransactionActionRepository extends JpaRepository<TransactionAc
     @Transactional
     @Query
     void deleteByUserAndTransactionAndCreate(Long user, Long transaction, boolean create);
+
+    @Query
+    int countAllByUserAndCreate(Long user, boolean create);
+
+    @Query
+    ArrayList<TransactionAction> findAllByUserAndCreate(Long user, boolean create);
 }

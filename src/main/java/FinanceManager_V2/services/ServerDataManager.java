@@ -26,9 +26,10 @@ public class ServerDataManager {
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authenticationService.url + "/api/get_updates");
         builder.queryParam("access_token", access_token)
-                .queryParam("last_update", lastUpdate);
+                .queryParam("last_update", lastUpdate.getTime());
         ResponseEntity<ActionQueue> responseEntity;
         try{
+            System.out.println("Trying to get last updates!!!!!!!");
             responseEntity = restTemplate.getForEntity(builder.toUriString(), ActionQueue.class);
             lastResponseCode = authenticationService.mapHttpStatus(responseEntity.getStatusCode());
         }catch (HttpStatusCodeException e){

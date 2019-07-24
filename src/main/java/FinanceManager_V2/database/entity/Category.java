@@ -49,6 +49,7 @@ public class Category implements Serializable {
         this.parent = parent;
     }
     public Category(CategoryAction action, Category parent){
+        this.category = action.getCategory();
         this.user = action.getUser();
         this.color = action.getColor();
         this.name = action.getName();
@@ -63,7 +64,6 @@ public class Category implements Serializable {
     public void setParent(Category parent) {
         this.parent = parent;
     }
-
 
     @Override
     public String toString() {

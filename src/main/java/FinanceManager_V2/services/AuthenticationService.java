@@ -112,9 +112,7 @@ public class AuthenticationService {
         }
         if(responseEntity.getStatusCode() == HttpStatus.OK){
             user = userRepository.findByEmail(email);
-
             setTokenData(responseEntity.getBody());
-
             if(user == null){
                 user = new User(email, password, lang.getLanguage().name());
                 user.setTokenData(getTokenData());
@@ -160,7 +158,7 @@ public class AuthenticationService {
         return response.getStatusCode();
     }
 
-    synchronized Long getUserId() {
+    public synchronized Long getUserId() {
         return user.getId();
     }
 
@@ -171,21 +169,23 @@ public class AuthenticationService {
     }
 
     synchronized Date getLastUpdateDate(){
-        if (user.getLast_update() == null){
-            return Date.from(Instant.MIN);
-        }else{
-            return user.getLast_update();
-        }
+        //TODO fix last_update user field property
+        return Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 30 * 20));
+//        if (user.getLast_update() == null){
+//            return Date.from(Instant.MIN);
+//        }else{
+//            return user.getLast_update();
+//        }
     }
 
     public boolean isInitialized(){
         return user != null && tokenData != null;
     }
 
-    String getUserPassword(){
+    public String getUserPassword(){
         return user.getPassword();
     }
-    String getUserEmail(){
+    public String getUserEmail(){
         return user.getEmail();
     }
 }

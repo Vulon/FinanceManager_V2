@@ -82,6 +82,7 @@ public class BudgetAction implements Serializable, Action {
     public BudgetAction(boolean isCreate, Date commitDate, Budget budget) {
         this.create = isCreate;
         this.commitDate = commitDate;
+        this.budget = budget.getBudget();
         this.user = budget.getUser();
         this.name = budget.getName();
         this.amount = budget.getAmount();
@@ -138,6 +139,21 @@ public class BudgetAction implements Serializable, Action {
         return Objects.hash(create, commitDate, budget, user, name, amount, start, end, notifyLevel, categories);
     }
 
+    @Override
+    public String toString() {
+        return "BudgetAction{" +
+                "create=" + create +
+                ", commitDate=" + commitDate +
+                ", budget=" + budget +
+                ", user=" + user +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                ", start=" + start +
+                ", end=" + end +
+                ", notifyLevel=" + notifyLevel +
+                ", categories=" + categories +
+                '}';
+    }
 
     public Long getBudget() {
         return budget;

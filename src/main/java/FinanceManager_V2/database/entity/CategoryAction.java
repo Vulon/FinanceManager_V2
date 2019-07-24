@@ -58,6 +58,7 @@ public class CategoryAction implements Serializable, Action {
 
     public CategoryAction(boolean isCreate, Date commitDate, Category category) {
         this.create = isCreate;
+        this.category = category.getCategory();
         this.commitDate = commitDate;
         this.category = category.getCategory();
         this.user = category.getUser();
@@ -85,6 +86,20 @@ public class CategoryAction implements Serializable, Action {
     @Override
     public int hashCode() {
         return Objects.hash(create, commitDate, category, user, color, name, icon_id, parent_id);
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryAction{" +
+                "create=" + create +
+                ", commitDate=" + commitDate +
+                ", category=" + category +
+                ", user=" + user +
+                ", color='" + color + '\'' +
+                ", name='" + name + '\'' +
+                ", icon_id=" + icon_id +
+                ", parent_id=" + parent_id +
+                '}';
     }
 
     @Override
