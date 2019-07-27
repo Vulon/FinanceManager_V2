@@ -19,4 +19,9 @@ public interface CategoryActionRepository extends JpaRepository<CategoryAction, 
     @Modifying
     @Transactional
     void deleteByUserAndCategoryAndCreate(Long user, Long category, boolean create);
+
+    @Query
+    @Modifying
+    @Transactional
+    void deleteAllByUser(Long user);
 }

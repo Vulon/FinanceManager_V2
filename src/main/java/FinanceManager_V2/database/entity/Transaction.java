@@ -13,7 +13,6 @@ import java.util.Objects;
 public class Transaction implements Serializable {
     private static final long serialVersionUID = -5744874026510540290L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transaction")
     private Long transaction;
 
@@ -43,11 +42,20 @@ public class Transaction implements Serializable {
         this.category = category;
     }
     public Transaction(TransactionAction action, Category category){
-        this.transaction = action.getTransaction();
+        this.transaction = action.getOriginalId();
         this.user = action.getUser();
         this.amount = action.getAmount();
         this.date = action.getDate();
         this.note = action.getNote();
+        this.category = category;
+    }
+
+    public void updateData(TransactionAction transactionAction, Category category){
+        this.transaction = transactionAction.getOriginalId();
+        this.user = transactionAction.getUser();
+        this.amount = transactionAction.getAmount();
+        this.date = transactionAction.getDate();
+        this.note = transactionAction.getNote();
         this.category = category;
     }
 

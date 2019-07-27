@@ -53,6 +53,8 @@ public class BudgetAction implements Serializable, Action {
     @Column(name = "notifyLevel")
     private Float notifyLevel;
 
+    private Long originalId;
+
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "budget_category", joinColumns = {
@@ -76,6 +78,11 @@ public class BudgetAction implements Serializable, Action {
         this.categories = new HashSet<>(categories);
     }
 
+    @Override
+    public Long getOriginalId() {
+        return originalId;
+    }
+
     public BudgetAction() {
     }
 
@@ -90,32 +97,10 @@ public class BudgetAction implements Serializable, Action {
         this.end = budget.getEnd();
         this.notifyLevel = budget.getNotifyLevel();
         this.categories = new HashSet<>(budget.getCategories());
+        this.originalId = budget.getBudget();
     }
 
-    @Override
-    public String getType() {
-        return "budget";
-    }
 
-    @Override
-    public boolean isCreate() {
-        return create;
-    }
-
-    @Override
-    public void setCreate(boolean create) {
-        this.create = create;
-    }
-
-    @Override
-    public Date getCommitDate() {
-        return commitDate;
-    }
-
-    @Override
-    public void setCommitDate(Date commitDate) {
-        this.commitDate = commitDate;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -151,8 +136,34 @@ public class BudgetAction implements Serializable, Action {
                 ", start=" + start +
                 ", end=" + end +
                 ", notifyLevel=" + notifyLevel +
+                ", originalId=" + originalId +
                 ", categories=" + categories +
                 '}';
+    }
+
+    @Override
+    public String getType() {
+        return "budget";
+    }
+
+    @Override
+    public boolean isCreate() {
+        return create;
+    }
+
+    @Override
+    public void setCreate(boolean create) {
+        this.create = create;
+    }
+
+    @Override
+    public Date getCommitDate() {
+        return commitDate;
+    }
+
+    @Override
+    public void setCommitDate(Date commitDate) {
+        this.commitDate = commitDate;
     }
 
     public Long getBudget() {

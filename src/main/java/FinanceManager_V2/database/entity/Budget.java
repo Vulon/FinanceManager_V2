@@ -15,7 +15,6 @@ public class Budget implements Serializable {
     private static final long serialVersionUID = -5300057576001284517L;
     @Id
     @Column(name = "budget")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long budget;
 
 
@@ -37,7 +36,6 @@ public class Budget implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "end")
     private Date end;
-
 
     @Column(name = "notifyLevel")
     private Float notifyLevel;
@@ -68,7 +66,8 @@ public class Budget implements Serializable {
         this.categories = categories;
     }
     public Budget(BudgetAction action){
-        this.budget = action.getBudget();
+        this.budget = action.getOriginalId();
+        this.user = action.getUser();
         this.name = action.getName();
         this.amount = action.getAmount();
         this.start = action.getStart();
@@ -85,6 +84,17 @@ public class Budget implements Serializable {
         this.end = end;
         this.categories = categories;
         notifyLevel = 0.25f;
+    }
+
+    public void updateData(BudgetAction budgetAction, Set<Category> categories){
+        this.user = budgetAction.getUser();
+        this.name = budgetAction.getName();
+        this.amount = budgetAction.getAmount();
+        this.start = budgetAction.getStart();
+        this.end = budgetAction.getEnd();
+        this.categories = categories;
+        this.notifyLevel = budgetAction.getNotifyLevel();
+
     }
 
     @Override

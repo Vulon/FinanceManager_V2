@@ -116,7 +116,7 @@ public class AuthenticationService {
             if(user == null){
                 user = new User(email, password, lang.getLanguage().name());
                 user.setTokenData(getTokenData());
-                userRepository.saveAndFlush(user);
+                user = userRepository.saveAndFlush(user);
             }else{
                 user.setTokenData(getTokenData());
             }
@@ -168,14 +168,18 @@ public class AuthenticationService {
         }
     }
 
-    synchronized Date getLastUpdateDate(){
-        //TODO fix last_update user field property
-        return Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 30 * 20));
-//        if (user.getLast_update() == null){
-//            return Date.from(Instant.MIN);
-//        }else{
-//            return user.getLast_update();
-//        }
+    public void setLastUpdate(Date lastUpdate){
+        synchronized (user){
+            user.setLast_update(lastUpdate);
+        }
+    }
+
+    public synchronized Date getLastUpdateDate(){
+        if(user == null || user.getLast_update() == null){
+            return Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 30 * 20));
+        }else{
+            return user.getLast_update();
+        }
     }
 
     public boolean isInitialized(){

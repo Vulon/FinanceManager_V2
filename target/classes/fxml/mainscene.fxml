@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressIndicator?>
@@ -93,38 +94,38 @@
                         <Insets left="30.0" />
                      </GridPane.margin>
                   </TextArea>
-                  <ChoiceBox fx:id="tr_category" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets left="30.0" top="20.0" />
-                     </GridPane.margin>
-                  </ChoiceBox>
                   <HBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="SOMETIMES">
                      <GridPane.margin>
                         <Insets left="30.0" />
                      </GridPane.margin>
                      <children>
-                        <Button fx:id="tr_save" minWidth="70.0" mnemonicParsing="false" text="Save">
+                        <Button fx:id="tr_save" minWidth="70.0" mnemonicParsing="false" text="Save" onAction="#tr_handle_save">
                            <HBox.margin>
                               <Insets left="10.0" top="20.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="tr_delete" minWidth="70.0" mnemonicParsing="false" text="Delete">
+                        <Button fx:id="tr_delete" minWidth="70.0" mnemonicParsing="false" text="Delete" onAction="#tr_handle_delete">
                            <HBox.margin>
                               <Insets left="30.0" top="20.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="tr_cancel" minWidth="70.0" mnemonicParsing="false" text="Cancel">
+                        <Button fx:id="tr_cancel" minWidth="70.0" mnemonicParsing="false" text="Cancel" onAction="#tr_handle_cancel">
                            <HBox.margin>
                               <Insets left="30.0" top="20.0" />
                            </HBox.margin>
                         </Button>
                      </children>
                   </HBox>
-                  <ChoiceBox fx:id="tr_page" prefHeight="26.0" prefWidth="159.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER">
+                  <ComboBox fx:id="tr_category" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets left="20.0" right="5.0" />
+                        <Insets left="30.0" top="20.0" />
                      </GridPane.margin>
-                  </ChoiceBox>
+                  </ComboBox>
+                  <ComboBox fx:id="tr_page" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="20.0" />
+                     </GridPane.margin>
+                  </ComboBox>
                </children>
             </GridPane>
             <GridPane fx:id="ca_pane" visible="false">

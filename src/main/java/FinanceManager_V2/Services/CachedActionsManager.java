@@ -95,9 +95,22 @@ public class CachedActionsManager {
             }
             System.out.println("CachedActionsManager: token valid");
             //get updates from server
-            ActionQueue updatesQueue = serverDataManager.getLastUpdates(
-                    tokenData.getAccess_token(),
-                    authenticationService.getLastUpdateDate());
+            ActionQueue updatesQueue;
+            int categoriesAmount = categoryRepository.findAllByUser(authenticationService.getUserId()).size();
+            if(categoriesAmount < 2){
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.set(2000, Calendar.JANUARY, 1);
+                System.out.println("Update date set to 1.1.2000 because categories amount: " + categoriesAmount);
+                updatesQueue =  serverDataManager.getLastUpdates(
+                        tokenData.getAccess_token(),
+                        Date.from(calendar.toInstant()));
+            }else{
+                System.out.println("Update date set to " + authenticationService.getLastUpdateDate().toString());
+                updatesQueue = serverDataManager.getLastUpdates(
+                        tokenData.getAccess_token(),
+                        authenticationService.getLastUpdateDate());
+            }
+
             if(updatesQueue == null || serverDataManager.lastResponseCode != AuthenticationService.ServerResponseCode.OK){
                 //Server did not return correct answer
                 setThreadActive(false);
@@ -106,6 +119,7 @@ public class CachedActionsManager {
             }
             System.out.println("CachedActionsManager: getLastUpdates server code OK");
             try{
+                System.out.println("Started processing update queue from server with size " + updatesQueue.getTotalSize());
                 processActionQueue(updatesQueue);
             }catch (DatabaseUpdateException e){ //TODO send message, and try to get updates again
                 e.printStackTrace();
@@ -115,6 +129,8 @@ public class CachedActionsManager {
             System.out.println("CachedActionsManager: Finished processing updates");
 
             //post updates to server and get back completed ones
+            System.out.println("Posting to server " + localQueue.getTotalSize() + " actions");
+            System.out.println("ACTIONS TO POST: " + localQueue);
             ActionQueue completedUpdates = serverDataManager.postUpdates(localQueue, tokenData.getAccess_token());
             if(completedUpdates == null || serverDataManager.lastResponseCode != AuthenticationService.ServerResponseCode.OK){
                 //Server did not return correct answer
@@ -122,7 +138,7 @@ public class CachedActionsManager {
                 System.out.println("CachedActionsManager: error posting updates server response code " + serverDataManager.lastResponseCode.toString());
                 return;
             }
-            System.out.println("CachedActionsManager: Finished posting updates");
+            System.out.println("CachedActionsManager: Updates posted. Processing " + completedUpdates.getTotalSize() + " updates");
             try{
                 processActionQueue(completedUpdates);
             }catch (DatabaseUpdateException e){
@@ -141,38 +157,41 @@ public class CachedActionsManager {
 
         private void clearActionRepositories(Queue<Action> actions, @Nullable Action stopAction){
             System.out.println("Clearing action repositories");
-            while (actions.size() > 0){
-                Action action = actions.remove();
-                switch (action.getType()){
-                    case "budget":{
-                        BudgetAction budgetAction = (BudgetAction)action;
-                        if(stopAction != null && stopAction.getType().equals("budget") && ((BudgetAction)stopAction).getBudget().equals(budgetAction.getBudget())){
-                            actions.clear();
-                            break;
-                        }
-                        budgetActionRepository.deleteByUserAndBudgetAndCreate(authenticationService.getUserId(), budgetAction.getBudget(), budgetAction.isCreate());
-                        break;
-                    }
-                    case "transaction":{
-                        TransactionAction transactionAction = (TransactionAction)action;
-                        if(stopAction != null && stopAction.getType().equals("transaction") && ((TransactionAction)stopAction).getTransaction().equals(transactionAction.getTransaction())){
-                            actions.clear();
-                            break;
-                        }
-                        transactionActionRepository.deleteByUserAndTransactionAndCreate(authenticationService.getUserId(), transactionAction.getTransaction(), transactionAction.isCreate());
-                        break;
-                    }
-                    case "category":{
-                        CategoryAction categoryAction = (CategoryAction)action;
-                        if(stopAction != null && stopAction.getType().equals("category") && ((CategoryAction)stopAction).getCategory().equals(categoryAction.getCategory())){
-                            actions.clear();
-                            break;
-                        }
-                        categoryActionRepository.deleteByUserAndCategoryAndCreate(authenticationService.getUserId(), categoryAction.getCategory(), categoryAction.isCreate());
-                        break;
-                    }
-                }
-            }
+            categoryActionRepository.deleteAllByUser(authenticationService.getUserId());
+            transactionActionRepository.deleteAllByUser(authenticationService.getUserId());
+            budgetActionRepository.deleteAllByUser(authenticationService.getUserId());
+//            while (actions.size() > 0){
+//                Action action = actions.remove();
+//                switch (action.getType()){
+//                    case "budget":{
+//                        BudgetAction budgetAction = (BudgetAction)action;
+//                        if(stopAction != null && stopAction.getType().equals("budget") && ((BudgetAction)stopAction).getBudget().equals(budgetAction.getBudget())){
+//                            actions.clear();
+//                            break;
+//                        }
+//                        budgetActionRepository.deleteByUserAndBudgetAndCreate(authenticationService.getUserId(), budgetAction.getBudget(), budgetAction.isCreate());
+//                        break;
+//                    }
+//                    case "transaction":{
+//                        TransactionAction transactionAction = (TransactionAction)action;
+//                        if(stopAction != null && stopAction.getType().equals("transaction") && ((TransactionAction)stopAction).getTransaction().equals(transactionAction.getTransaction())){
+//                            actions.clear();
+//                            break;
+//                        }
+//                        transactionActionRepository.deleteByUserAndTransactionAndCreate(authenticationService.getUserId(), transactionAction.getTransaction(), transactionAction.isCreate());
+//                        break;
+//                    }
+//                    case "category":{
+//                        CategoryAction categoryAction = (CategoryAction)action;
+//                        if(stopAction != null && stopAction.getType().equals("category") && ((CategoryAction)stopAction).getCategory().equals(categoryAction.getCategory())){
+//                            actions.clear();
+//                            break;
+//                        }
+//                        categoryActionRepository.deleteByUserAndCategoryAndCreate(authenticationService.getUserId(), categoryAction.getCategory(), categoryAction.isCreate());
+//                        break;
+//                    }
+//                }
+//            }
         }
 
         private void loadCachedActionsToDatabase(ActionQueue queue){
@@ -195,22 +214,27 @@ public class CachedActionsManager {
 
         private void processActionQueue(ActionQueue processableQueue) throws DatabaseUpdateException{
             Queue<Action> queue = processableQueue.getActionsQueue();
-            System.out.println("Started processing queue with size " + queue.size());
             Long userId = authenticationService.getUserId();
             while (queue.size() > 0){
                 Action action = queue.remove();
                 switch (action.getType()){
                     case "transaction":{
                         TransactionAction transactionAction = (TransactionAction) action;
+                        transactionAction.setUser(authenticationService.getUserId());
                         try{
                             if(transactionAction.isCreate()){
                                 Category category = categoryRepository.getByUserAndCategory(userId, transactionAction.getCategory_id());
-                                Transaction transaction = new Transaction(transactionAction, category);
-                                transaction.setUser(authenticationService.getUserId());
-                                transactionRepository.saveAndFlush(transaction);
-                                System.out.println("Created transaction " + transaction.toString());
+
+                                Transaction existing = transactionRepository.getByUserAndTransaction(authenticationService.getUserId(), transactionAction.getOriginalId());
+                                if(existing == null){
+                                    existing = new Transaction(transactionAction, category);
+                                }else{
+                                    existing.updateData(transactionAction, category);
+                                }
+                                existing = transactionRepository.saveAndFlush(existing);
+                                System.out.println("Created transaction " + existing.toString());
                             }else{
-                                transactionRepository.deleteByUserAndTransaction(userId, transactionAction.getTransaction());
+                                transactionRepository.deleteByUserAndTransaction(userId, transactionAction.getOriginalId());
                                 transactionRepository.flush();
                                 System.out.println("Deleted transaction " + transactionAction.toString());
                             }
@@ -224,20 +248,25 @@ public class CachedActionsManager {
                     }
                     case "budget":{
                         BudgetAction budgetAction = (BudgetAction)action;
+                        budgetAction.setUser(authenticationService.getUserId());
                         try{
                             if(budgetAction.isCreate()){
-                               Budget budget = new Budget(budgetAction);
+                               Budget budget = budgetRepository.getByUserAndBudget(authenticationService.getUserId(), budgetAction.getOriginalId());
                                Set<Category> categorySet = budgetAction.getCategories();
                                Set<Category> actualCategories = new HashSet<>();
                                for(Category category : categorySet){
-                                    actualCategories.add(categoryRepository.getByUserAndCategory(userId, category.getCategory()));
+                                   actualCategories.add(categoryRepository.getByUserAndCategory(userId, category.getCategory()));
                                }
-                               budget.setCategories(actualCategories);
-                               budget.setUser(authenticationService.getUserId());
-                               budgetRepository.saveAndFlush(budget);
+                               if(budget == null){
+                                   budget = new Budget(budgetAction);
+                                   budget.setCategories(actualCategories);
+                               }else{
+                                   budget.updateData(budgetAction, actualCategories);
+                               }
+                               budget = budgetRepository.saveAndFlush(budget);
                                 System.out.println("Created budget " + budget.toString());
                             }else{
-                                budgetRepository.deleteByUserAndBudget(userId, budgetAction.getBudget());
+                                budgetRepository.deleteByUserAndBudget(userId, budgetAction.getOriginalId());
                                 budgetRepository.flush();
                                 System.out.println("Deleted budget " + budgetAction.toString());
                             }
@@ -251,21 +280,27 @@ public class CachedActionsManager {
                     }
                     case "category":{
                         CategoryAction categoryAction = (CategoryAction)action;
+                        categoryAction.setUser(authenticationService.getUserId());
                         try{
                             if(categoryAction.isCreate()){
-                                Category category;
+                                Category parent;
                                 if(categoryAction.getParent_id() < 0){
-                                    category = new Category(categoryAction, null);
+                                    parent = null;
                                 }else{
-                                    Category parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
-                                    category = new Category(categoryAction, parent);
+                                    parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
                                 }
-                                category.setUser(authenticationService.getUserId());
-                                categoryRepository.saveAndFlush(category);
-                                System.out.println("Created category " + category.toString());
+
+                                Category existing = categoryRepository.getByUserAndCategory(authenticationService.getUserId(), categoryAction.getOriginalId());
+                                if(existing == null){
+                                    existing = new Category(categoryAction, parent);
+                                }else {
+                                    existing.updateData(categoryAction, parent);
+                                }
+                                existing = categoryRepository.saveAndFlush(existing);
+                                System.out.println("Created category " + existing.toString());
                             }else{
                                 Category parent = categoryRepository.getByUserAndCategory(userId, categoryAction.getParent_id());
-                                Category thisCategory = categoryRepository.getByUserAndCategory(userId, categoryAction.getCategory());
+                                Category thisCategory = categoryRepository.getByUserAndCategory(userId, categoryAction.getOriginalId());
                                 List<Budget> budgetList = budgetRepository.getAllByUserAndCategory(userId, thisCategory);
                                 for(Budget b : budgetList){ //swap category reference with parent reference in budget repository
                                     Set<Category> categories = b.getCategories();
@@ -368,30 +403,37 @@ public class CachedActionsManager {
     public void cacheAction(Action action, Class actionClass){
         if(actionClass.equals(CategoryAction.class)){
             CategoryAction categoryAction = (CategoryAction) action;
+            System.out.println("CachedActionsManager: cached category action " + categoryAction );
             if (isThreadActive()){
                 synchronized (this.cachedActions){
                     cachedActions.addCategoryAction(categoryAction);
+                    System.out.println("CachedActionsManager: CACHED category action " + categoryAction );
                 }
             }else{
-                categoryActionRepository.saveAndFlush(categoryAction);
+                categoryAction = categoryActionRepository.saveAndFlush(categoryAction);
+                System.out.println("CachedActionsManager: SAVED TO DATABASE category action " + categoryAction );
             }
         }else if(actionClass.equals(TransactionAction.class)){
             TransactionAction transactionAction = (TransactionAction)action;
             if(isThreadActive()){
                 synchronized (this.cachedActions){
                     cachedActions.addTransactionAction(transactionAction);
+                    System.out.println("CachedActionsManager: CACHED transaction action " + transactionAction );
                 }
             }else{
-                transactionActionRepository.saveAndFlush(transactionAction);
+                transactionAction = transactionActionRepository.saveAndFlush(transactionAction);
+                System.out.println("CachedActionsManager: SAVED TO DATABASE transaction action " + transactionAction );
             }
         }else if(actionClass.equals(BudgetAction.class)){
             BudgetAction budgetAction = (BudgetAction)action;
             if(isThreadActive()){
                 synchronized (this.cachedActions){
                     cachedActions.addBudgetAction(budgetAction);
+                    System.out.println("CachedActionsManager: CACHED budget action " + budgetAction);
                 }
             }else{
-                budgetActionRepository.saveAndFlush(budgetAction);
+                budgetAction = budgetActionRepository.saveAndFlush(budgetAction);
+                System.out.println("CachedActionsManager: SAVED TO DATABASE budget action " + budgetAction);
             }
         }
         processUpdates();

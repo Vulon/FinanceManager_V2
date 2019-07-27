@@ -24,4 +24,9 @@ public interface TransactionActionRepository extends JpaRepository<TransactionAc
 
     @Query
     ArrayList<TransactionAction> findAllByUserAndCreate(Long user, boolean create);
+
+    @Query
+    @Modifying
+    @Transactional
+    void deleteAllByUser(Long user);
 }

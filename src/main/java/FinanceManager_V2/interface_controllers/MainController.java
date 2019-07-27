@@ -6,19 +6,25 @@ import FinanceManager_V2.Database.Entity.Transaction;
 import FinanceManager_V2.Database.Entity.TransactionAction;
 import FinanceManager_V2.Database.Repositories.*;
 import FinanceManager_V2.Events.DataChangedEvent;
+import FinanceManager_V2.Interface_controllers.ListViewCellsControllers.TransactionListViewCellController;
+import FinanceManager_V2.ListViewCells.TransactionListViewCell;
 import FinanceManager_V2.Services.AuthenticationService;
 import FinanceManager_V2.Services.CachedActionsManager;
 import FinanceManager_V2.Services.IconLoader;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Callback;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -26,9 +32,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 @Component
 public class MainController {
+
+
     //AutoWired:
     private TransactionRepository transactionRepository;
     private CategoryRepository categoryRepository;
@@ -54,19 +65,26 @@ public class MainController {
 
     @EventListener
     public void handleDataChanged(DataChangedEvent dataChangedEvent){
-        if(dataChangedEvent.isCategoriesChanged()){
-            tr_updateCategoriesList();
-        }
-        if(dataChangedEvent.isTransactionsChanged()){
-            tr_updateTransactionsList();
-        }
-        if(dataChangedEvent.isBudgetsChanged()){
+        System.out.println("Caught data changed event ");
+        Platform.runLater(() -> {
+            if(!setupCompleted){
 
-        }
+                manualSetUp();
+            }
+            if(dataChangedEvent.isCategoriesChanged()){
+                tr_updateCategoriesList();
+            }
+            if(dataChangedEvent.isTransactionsChanged()){
+                tr_updateTransactionsList();
+            }
+            if(dataChangedEvent.isBudgetsChanged()){
+
+            }
+        });
     }
 
 
-
+    private boolean setupCompleted  = false;
     //Main Control buttons
     @FXML    ToggleButton main_transactions;
     @FXML    ToggleButton main_categories;
@@ -119,21 +137,25 @@ public class MainController {
         tr_selected_transactionID = -1;
     }
     @FXML void tr_handle_save(){
+        Double amount;
+        try{
+            amount = Double.parseDouble(tr_amount.getText());
+        }catch (Exception e){
+            //TODO send message about incorrect input
+            return;
+        }
         if(tr_selected_transactionID < 0){//create new
-            Double amount = -1.0;
-            try{
-                amount = Double.parseDouble(tr_amount.getText());
-            }catch (Exception e){
-                //TODO send message about incorrect input
-                return;
-            }
+
             Instant instant = Instant.from(tr_date.getValue().atStartOfDay(ZoneId.systemDefault()));
             TransactionAction transactionAction = new TransactionAction(true, Date.from(Instant.now()), authenticationService.getUserId(),
                     amount, Date.from(instant), tr_note.getText(), ((Category)tr_category.getSelectionModel().getSelectedItem()).getCategory());
             cachedActionsManager.cacheAction(transactionAction, TransactionAction.class);
         }else{ // modify
-            TransactionAction transactionAction = new TransactionAction(true, Date.from(Instant.now()), tr_transactionObservableList.get(tr_selected_transactionID));
-            cachedActionsManager.cacheAction(transactionAction, TransactionAction.class);
+            TransactionAction deleteAction = new TransactionAction(false, Date.from(Instant.now()), tr_transactionObservableList.get(tr_selected_transactionID));
+            cachedActionsManager.cacheAction(deleteAction, TransactionAction.class);
+            TransactionAction createAction = new TransactionAction(true, Date.from(Instant.now().plusSeconds(1)), authenticationService.getUserId(),
+                    amount, Date.from(Instant.now()), tr_note.getText(),  ((Category)tr_category.getSelectionModel().getSelectedItem()).getCategory());
+            cachedActionsManager.cacheAction(createAction, TransactionAction.class);
         }
 
         tr_cancel.setVisible(false);
@@ -149,6 +171,10 @@ public class MainController {
         tr_handle_cancel();
         tr_selected_transactionID = -1;
     }
+
+    private int tr_pagesCount;
+    private static int MAX_PAGE_TRANSACTIONS_COUNT = 10;
+
     private void tr_updateCategoriesList(){
         tr_categoryObservableList.clear();
         ArrayList<Category> categories = categoryRepository.findAllByUser(authenticationService.getUserId());
@@ -156,13 +182,13 @@ public class MainController {
         System.out.println("Found categories count: " + categories.size());
     }
     private void tr_updateTransactionsList(){
-        Long value = tr_page.getSelectionModel().getSelectedIndex() * 10l + 10l;
-        ArrayList<Transaction> newTransactions = transactionRepository.findFirstTransactions(authenticationService.getUserId(), value);
-        while(newTransactions.size() > MAX_PAGE_TRANSACTIONS_COUNT){
-            newTransactions.remove(0);
-        }
-        tr_transactionObservableList.clear();
-        tr_transactionObservableList.addAll(newTransactions);
+
+        Pageable pageable = PageRequest.of(tr_page.getSelectionModel().getSelectedIndex(), MAX_PAGE_TRANSACTIONS_COUNT);
+        List<Transaction> newTransactions = transactionRepository.findAllByUserOrderByDateDesc(authenticationService.getUserId(), pageable);
+        System.out.println("Found transaction: " + newTransactions);
+        tr_transactionObservableList.setAll(newTransactions);
+//        tr_transactionObservableList.clear();
+//        tr_transactionObservableList.addAll(newTransactions);
     }
 
 
@@ -191,66 +217,132 @@ public class MainController {
     @FXML    Button ca_delete;
     @FXML    Button ca_cancel;
 
+    private int ca_selected_transactionID;
 
-    private int tr_pagesCount;
-    private static int MAX_PAGE_TRANSACTIONS_COUNT = 10;
-
-    public void setIcon(int iconId){
+    public void ca_setIcon(int iconId){
 
     }
-
-    public void manualSetUp(){
-        iconLoader.loadIcons();
-        tr_pane.setVisible(true);
-        ca_pane.setVisible(false);
-        main_transactions.setSelected(true);
-        manualTransactionsSetUp();
-
+    @FXML    void ca_handle_radio_list_toggle(){
+        if( ca_list_expense.isArmed()){
+            ca_list_income.disarm();
+        }else{
+            ca_list_expense.disarm();
+        }
     }
-    public void manualTransactionsSetUp(){
+
+    @FXML
+    void ca_handle_radio_edit_toggle(){
+        if(ca_edit_expense.isArmed()){
+            ca_edit_income.disarm();
+        }else{
+            ca_edit_expense.disarm();
+        }
+    }
+
+    private ObservableList<Transaction> ca_categoriesObservableList;
+
+
+
+
+
+
+    public synchronized void manualSetUp(){
+        if(!setupCompleted){
+            System.out.println("FIRST SETUP INITIATED");
+            iconLoader.loadIcons();
+            tr_pane.setVisible(true);
+            ca_pane.setVisible(false);
+            main_transactions.setSelected(true);
+            manualTransactionsSetUp();
+            setupCompleted = true;
+        }
+    }
+    private void manualTransactionsSetUp(){
+        System.out.println("TRANSACTION SETUP INITIATED");
         tr_selected_transactionID = -1;
         int transactionsCount = transactionRepository.countAllByUser(authenticationService.getUserId());
-
         tr_pagesCount = transactionsCount / MAX_PAGE_TRANSACTIONS_COUNT;
         tr_pagesCount += (tr_pagesCount % MAX_PAGE_TRANSACTIONS_COUNT == 0) ? 0 : 1;
-        ObservableList<Integer> observableList = FXCollections.observableArrayList();
+        ObservableList<Integer> pageObservableList = FXCollections.observableArrayList();
         for(int i = 0; i < tr_pagesCount; i++){
-            observableList.add(i);
+            pageObservableList.add(i);
         }
-        tr_page.setItems(observableList);
+        if(tr_pagesCount < 1){
+            pageObservableList.add(0);
+        }
+        tr_page.setItems(pageObservableList);
+
         tr_page.getSelectionModel().selectFirst();
         tr_page.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("Selected new: " + newValue.toString());
-            ArrayList<Transaction> newTransactions = transactionRepository.findFirstTransactions(authenticationService.getUserId(), newValue.longValue() * 10l + 10l);
-            while(newTransactions.size() > MAX_PAGE_TRANSACTIONS_COUNT){
-                newTransactions.remove(0);
-            }
+            Pageable pageable = PageRequest.of(0, MAX_PAGE_TRANSACTIONS_COUNT);
+            List<Transaction> newTransactions = transactionRepository.findAllByUserOrderByDateDesc(authenticationService.getUserId(), pageable);
             tr_transactionObservableList.clear();
             tr_transactionObservableList.addAll(newTransactions);
         });
 
         tr_transactionObservableList = FXCollections.observableArrayList();
         tr_updateTransactionsList();
+        TransactionListViewCellController._iconLoader = iconLoader;
+
+        TransactionListViewCell.iconLoader = iconLoader;
+        tr_list.setCellFactory(param -> new TransactionListViewCell());
         tr_list.setItems(tr_transactionObservableList);
         tr_list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Transaction transaction = (Transaction)newValue;
+            System.out.println("Selected " + transaction);
             tr_selected_transactionID = tr_transactionObservableList.indexOf(transaction);
+            System.out.println("Selected transaction id: " + tr_selected_transactionID);
+            if(transaction == null || tr_selected_transactionID < 0 ){
+                tr_amount.setText("0");
+                tr_date.setValue(GregorianCalendar.getInstance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                tr_note.setText("");
+                tr_category.getSelectionModel().selectFirst();
+            }else{
+                tr_amount.setText(transaction.getAmount().toString());
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.setTime(transaction.getDate());
+                tr_date.setValue(calendar.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                tr_note.setText(transaction.getNote());
+                tr_category.getSelectionModel().select(transaction.getCategory());
+            }
             tr_cancel.setVisible(true);
             tr_delete.setVisible(true);
-            tr_amount.setText(transaction.getAmount().toString());
-            tr_date.setValue(transaction.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            tr_note.setText(transaction.getNote());
-            tr_category.getSelectionModel().select(transaction.getCategory());
-
         });
+
         tr_categoryObservableList = FXCollections.observableArrayList();
         tr_updateCategoriesList();
+
+        Callback<ListView<Category>, ListCell<Category>> cellFactory = new Callback<ListView<Category>, ListCell<Category>>() {
+            @Override
+            public ListCell<Category> call(ListView<Category> param) {
+                return new ListCell<Category>(){
+                    @Override
+                    protected void updateItem(Category item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(item.getName()); // Todo change category combobox layout maybe
+                        }
+                    }
+                };
+            }
+        };
+        tr_category.setCellFactory(cellFactory);
+        tr_category.setButtonCell(cellFactory.call(null));
         tr_category.setItems(tr_categoryObservableList);
-
-
 
         tr_cancel.setVisible(false);
         tr_delete.setVisible(false);
+        tr_category.getSelectionModel().selectFirst();
+
+    }
+
+    private void manualCategoriesSetUp(){
+        ca_selected_transactionID = -1;
+        ca_categoriesObservableList = FXCollections.observableArrayList();
+
 
     }
 }

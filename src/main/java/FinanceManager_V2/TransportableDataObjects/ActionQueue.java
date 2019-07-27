@@ -48,6 +48,10 @@ public class ActionQueue implements Serializable {
         this.categoryActions = categoryActions;
     }
 
+    public int getTotalSize(){
+        return budgetActions.size() + categoryActions.size() + transactionActions.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

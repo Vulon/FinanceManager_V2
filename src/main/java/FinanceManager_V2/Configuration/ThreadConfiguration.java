@@ -22,11 +22,11 @@ public class ThreadConfiguration {
         return executor;
     }
 
-    @Bean(name = "applicationEventMulticaster")
-    public ApplicationEventMulticaster simpleApplicationEventMulticaster() {
-        SimpleApplicationEventMulticaster eventMulticaster
-                = new SimpleApplicationEventMulticaster();
-        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        return eventMulticaster;
-    }
+//    @Bean(name = "applicationEventMulticaster")
+//    public ApplicationEventMulticaster simpleApplicationEventMulticaster() {
+//        SimpleApplicationEventMulticaster eventMulticaster
+//                = new SimpleApplicationEventMulticaster();
+//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//        return eventMulticaster;
+//    }
 }

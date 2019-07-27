@@ -13,7 +13,6 @@ import java.util.Objects;
 public class Category implements Serializable {
     private static final long serialVersionUID = -6265203350166782424L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "category")
     private Long category;
 
@@ -49,11 +48,19 @@ public class Category implements Serializable {
         this.parent = parent;
     }
     public Category(CategoryAction action, Category parent){
-        this.category = action.getCategory();
+        this.category = action.getOriginalId();
         this.user = action.getUser();
         this.color = action.getColor();
         this.name = action.getName();
         this.icon_id = action.getIcon_id();
+        this.parent = parent;
+    }
+    public void updateData(CategoryAction categoryAction, Category parent){
+        this.category = categoryAction.getOriginalId();
+        this.user = categoryAction.getUser();
+        this.color = categoryAction.getColor();
+        this.name = categoryAction.getName();
+        this.icon_id = categoryAction.getIcon_id();
         this.parent = parent;
     }
 
@@ -86,9 +93,10 @@ public class Category implements Serializable {
                 user.equals(category.user) &&
                 color.equals(category.color) &&
                 name.equals(category.name) &&
-                icon_id.equals(category.icon_id) &&
-                parent.equals(category.parent);
+                icon_id.equals(category.icon_id);
     }
+
+
 
     @Override
     public int hashCode() {

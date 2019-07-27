@@ -44,6 +44,8 @@ public class TransactionAction implements Serializable, Action {
     @Column(name = "category")
     private Long category_id;
 
+    private Long originalId;
+
     public TransactionAction(boolean isCreate, Date commitDate, Long user_id, Double amount, Date date, String note, Long category_id) {
         this.create = isCreate;
         this.commitDate = commitDate;
@@ -63,10 +65,17 @@ public class TransactionAction implements Serializable, Action {
         this.date = transaction.getDate();
         this.note = transaction.getNote();
         this.category_id = transaction.getCategory().getCategory();
+        this.originalId = transaction.getTransaction();
     }
 
     public TransactionAction() {
     }
+
+    @Override
+    public Long getOriginalId() {
+        return originalId;
+    }
+
 
     @Override
     public String toString() {
@@ -79,6 +88,7 @@ public class TransactionAction implements Serializable, Action {
                 ", date=" + date +
                 ", note='" + note + '\'' +
                 ", category_id=" + category_id +
+                ", originalId=" + originalId +
                 '}';
     }
 

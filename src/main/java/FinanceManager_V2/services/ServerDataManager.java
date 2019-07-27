@@ -3,6 +3,7 @@ package FinanceManager_V2.Services;
 
 import FinanceManager_V2.TransportableDataObjects.ActionQueue;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ public class ServerDataManager {
     public ActionQueue getLastUpdates(String access_token, Date lastUpdate){
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authenticationService.url + "/api/get_updates");
+
         builder.queryParam("access_token", access_token)
                 .queryParam("last_update", lastUpdate.getTime());
         ResponseEntity<ActionQueue> responseEntity;
@@ -46,6 +48,9 @@ public class ServerDataManager {
 
     public ActionQueue postUpdates(ActionQueue actionQueue, String access_token){
         RestTemplate restTemplate = new RestTemplate();
+        System.out.println("SERVER DATA MANAGER is about to post: " + actionQueue);
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authenticationService.url + "/api/post_updates");
         builder.queryParam("access_token", access_token);
         ResponseEntity<ActionQueue> responseEntity;

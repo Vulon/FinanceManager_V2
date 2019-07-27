@@ -19,4 +19,9 @@ public interface BudgetActionRepository extends JpaRepository<BudgetAction, Budg
     @Query
     @Transactional
     void deleteByUserAndBudgetAndCreate(Long user, Long budget, boolean create);
+
+    @Modifying
+    @Query
+    @Transactional
+    void deleteAllByUser(Long user);
 }

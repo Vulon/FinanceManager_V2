@@ -21,7 +21,7 @@ public class IconDialogController {
     @FXML    GridPane icon_pane;
 
     @FXML void handle_save(){
-        mainController.setIcon(selectedId);
+        mainController.ca_setIcon(selectedId);
         main_pane.getScene().getWindow().hide();
     }
 

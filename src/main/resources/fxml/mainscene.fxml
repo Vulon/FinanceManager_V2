@@ -58,19 +58,19 @@
    <center>
       <StackPane fx:id="stack_pane" minHeight="600.0" minWidth="680.0" prefHeight="600.0" prefWidth="680.0" BorderPane.alignment="CENTER">
          <children>
-            <GridPane fx:id="tr_pane" minHeight="600.0" minWidth="680.0" StackPane.alignment="CENTER">
+            <GridPane fx:id="tr_pane" minHeight="600.0" minWidth="680.0" visible="false" StackPane.alignment="CENTER">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="222.20001220703125" minWidth="10.0" prefWidth="202.7999755859375" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="366.20001220703125" minWidth="10.0" prefWidth="113.20002441406251" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="490.39997558593745" minWidth="10.0" prefWidth="223.40004882812497" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="439.400048828125" minWidth="10.0" prefWidth="145.20002441406245" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="490.39997558593745" minWidth="10.0" prefWidth="283.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="439.400048828125" minWidth="10.0" prefWidth="84.60000000000002" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints maxHeight="195.59998168945313" minHeight="10.0" prefHeight="47.19999694824219" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="43.80000915527343" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="52.59999084472656" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="45.19999999999999" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="345.8000366210937" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="78.80001220703124" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="309.1999877929687" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="567.9999969482421" minHeight="10.0" prefHeight="76.99996337890639" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
@@ -89,7 +89,7 @@
                         <Insets left="30.0" top="10.0" />
                      </GridPane.margin>
                   </DatePicker>
-                  <TextArea fx:id="tr_note" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                  <TextArea fx:id="tr_note" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
                      <GridPane.margin>
                         <Insets left="30.0" />
                      </GridPane.margin>
@@ -99,17 +99,17 @@
                         <Insets left="30.0" />
                      </GridPane.margin>
                      <children>
-                        <Button fx:id="tr_save" minWidth="70.0" mnemonicParsing="false" text="Save">
+                        <Button fx:id="tr_save" minWidth="70.0" mnemonicParsing="false" onAction="#tr_handle_save" text="Save">
                            <HBox.margin>
                               <Insets left="10.0" top="20.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="tr_delete" minWidth="70.0" mnemonicParsing="false" text="Delete">
+                        <Button fx:id="tr_delete" minWidth="70.0" mnemonicParsing="false" onAction="#tr_handle_delete" text="Delete">
                            <HBox.margin>
                               <Insets left="30.0" top="20.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="tr_cancel" minWidth="70.0" mnemonicParsing="false" text="Cancel">
+                        <Button fx:id="tr_cancel" minWidth="70.0" mnemonicParsing="false" onAction="#tr_handle_cancel" text="Cancel">
                            <HBox.margin>
                               <Insets left="30.0" top="20.0" />
                            </HBox.margin>
@@ -128,7 +128,7 @@
                   </ComboBox>
                </children>
             </GridPane>
-            <GridPane fx:id="ca_pane" visible="false">
+            <GridPane fx:id="ca_pane">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="163.20003509521484" minWidth="10.0" prefWidth="160.0000228881836" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="151.1999771118164" />
@@ -171,12 +171,12 @@
                         <Insets bottom="20.0" left="20.0" />
                      </GridPane.margin>
                   </ListView>
-                  <RadioButton fx:id="ca_list_income" mnemonicParsing="false" text="Income" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <RadioButton fx:id="ca_list_income" mnemonicParsing="false" text="Income" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" onAction="#ca_handle_radio_list_toggle">
                      <GridPane.margin>
                         <Insets bottom="5.0" />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="ca_list_expense" mnemonicParsing="false" text="Expense" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <RadioButton fx:id="ca_list_expense" mnemonicParsing="false" text="Expense" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" onAction="#ca_handle_radio_list_toggle">
                      <GridPane.margin>
                         <Insets bottom="5.0" />
                      </GridPane.margin>
@@ -206,12 +206,12 @@
                         <Insets />
                      </GridPane.margin>
                   </Button>
-                  <RadioButton fx:id="ca_edit_income" mnemonicParsing="false" text="Income" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                  <RadioButton fx:id="ca_edit_income" mnemonicParsing="false" text="Income" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="TOP" onAction="#ca_handle_radio_edit_toggle">
                      <GridPane.margin>
                         <Insets left="10.0" top="10.0" />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="ca_edit_expense" mnemonicParsing="false" text="Exepnse" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                  <RadioButton fx:id="ca_edit_expense" mnemonicParsing="false" text="Exepnse" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" onAction="#ca_handle_radio_edit_toggle">
                      <GridPane.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </GridPane.margin>

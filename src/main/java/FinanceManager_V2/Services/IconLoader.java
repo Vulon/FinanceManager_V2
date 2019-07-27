@@ -23,6 +23,7 @@ public class IconLoader {
                 String filename = String.format(template, i);
                 File file = new File(MainApplication.class.getClassLoader().getResource(filename).getFile());
                 Image image = new Image(file.toURI().toString());
+
                 icons.add(image);
             }catch (Exception e){
                 e.printStackTrace();

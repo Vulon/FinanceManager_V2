@@ -23,5 +23,7 @@ public interface BudgetRepository extends JpaRepository<Budget, BudgetPK> {
     List<Budget> getAllByUserAndCategory(@Param(value = "user")Long user, @Param(value = "category") Category category);
 
     @Query
-    Budget findByUserAndBudget(Long user, Long budget);
+    Budget getByUserAndBudget(Long user, Long budget);
+
+
 }

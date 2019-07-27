@@ -11,13 +11,15 @@ public interface Action extends Comparable{
         return Long.compare(this.getCommitDate().getTime(), other.getCommitDate().getTime());
     }
 
-    public abstract Date getCommitDate();
+    Date getCommitDate();
 
-    public abstract void setCommitDate(Date commitDate);
+    void setCommitDate(Date commitDate);
 
-    public abstract String getType();
+    String getType();
 
-    public abstract boolean isCreate();
+    boolean isCreate();
 
-    public abstract void setCreate(boolean create);
+    void setCreate(boolean create);
+
+    Long getOriginalId();
 }

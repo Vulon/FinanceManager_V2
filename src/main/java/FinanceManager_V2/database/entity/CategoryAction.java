@@ -42,6 +42,8 @@ public class CategoryAction implements Serializable, Action {
     @Column(name = "parent_id")
     private Long parent_id;
 
+    private Long originalId;
+
     public CategoryAction(boolean isCreate, Date commitDate, Long category_id, Long user_id, String color, String name, Integer icon_id, Long parent_id) {
         this.create = isCreate;
         this.commitDate = commitDate;
@@ -56,6 +58,11 @@ public class CategoryAction implements Serializable, Action {
     public CategoryAction() {
     }
 
+    @Override
+    public Long getOriginalId() {
+        return originalId;
+    }
+
     public CategoryAction(boolean isCreate, Date commitDate, Category category) {
         this.create = isCreate;
         this.category = category.getCategory();
@@ -66,6 +73,7 @@ public class CategoryAction implements Serializable, Action {
         this.name = category.getName();
         this.icon_id = category.getIcon_id();
         this.parent_id = category.getParent().getCategory();
+        originalId = category.getCategory();
     }
 
     @Override
@@ -99,6 +107,7 @@ public class CategoryAction implements Serializable, Action {
                 ", name='" + name + '\'' +
                 ", icon_id=" + icon_id +
                 ", parent_id=" + parent_id +
+                ", originalId=" + originalId +
                 '}';
     }
 
