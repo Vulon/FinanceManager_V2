@@ -46,14 +46,19 @@ public class TransactionAction implements Serializable, Action {
 
     private Long originalId;
 
-    public TransactionAction(boolean isCreate, Date commitDate, Long user_id, Double amount, Date date, String note, Long category_id) {
-        this.create = isCreate;
+    @Column(name = "repeatable")
+    private boolean repeatable;
+
+    public TransactionAction(boolean create, Date commitDate, Long user, Double amount, Date date, String note, Long category_id, Long originalId, boolean repeatable) {
+        this.create = create;
         this.commitDate = commitDate;
-        this.user = user_id;
+        this.user = user;
         this.amount = amount;
         this.date = date;
         this.note = note;
         this.category_id = category_id;
+        this.originalId = originalId;
+        this.repeatable = repeatable;
     }
 
     public TransactionAction(boolean isCreate, Date commitDate, Transaction transaction) {
@@ -66,6 +71,7 @@ public class TransactionAction implements Serializable, Action {
         this.note = transaction.getNote();
         this.category_id = transaction.getCategory().getCategory();
         this.originalId = transaction.getTransaction();
+        this.repeatable = transaction.isRepeatable();
     }
 
     public TransactionAction() {
@@ -75,7 +81,6 @@ public class TransactionAction implements Serializable, Action {
     public Long getOriginalId() {
         return originalId;
     }
-
 
     @Override
     public String toString() {
@@ -89,6 +94,7 @@ public class TransactionAction implements Serializable, Action {
                 ", note='" + note + '\'' +
                 ", category_id=" + category_id +
                 ", originalId=" + originalId +
+                ", repeatable=" + repeatable +
                 '}';
     }
 
@@ -98,18 +104,20 @@ public class TransactionAction implements Serializable, Action {
         if (o == null || getClass() != o.getClass()) return false;
         TransactionAction that = (TransactionAction) o;
         return create == that.create &&
-                Objects.equals(commitDate, that.commitDate) &&
+                repeatable == that.repeatable &&
+                commitDate.equals(that.commitDate) &&
                 Objects.equals(transaction, that.transaction) &&
-                Objects.equals(user, that.user) &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(date, that.date) &&
+                user.equals(that.user) &&
+                amount.equals(that.amount) &&
+                date.equals(that.date) &&
                 Objects.equals(note, that.note) &&
-                Objects.equals(category_id, that.category_id);
+                category_id.equals(that.category_id) &&
+                originalId.equals(that.originalId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(create, commitDate, transaction, user, amount, date, note, category_id);
+        return Objects.hash(create, commitDate, transaction, user, amount, date, note, category_id, originalId, repeatable);
     }
 
     @Override
@@ -117,18 +125,22 @@ public class TransactionAction implements Serializable, Action {
         return "transaction";
     }
 
+    @Override
     public boolean isCreate() {
         return create;
     }
 
+    @Override
     public void setCreate(boolean create) {
         this.create = create;
     }
 
+    @Override
     public Date getCommitDate() {
         return commitDate;
     }
 
+    @Override
     public void setCommitDate(Date commitDate) {
         this.commitDate = commitDate;
     }
@@ -179,5 +191,17 @@ public class TransactionAction implements Serializable, Action {
 
     public void setCategory_id(Long category_id) {
         this.category_id = category_id;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
+    }
+
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    public void setRepeatable(boolean repeatable) {
+        this.repeatable = repeatable;
     }
 }

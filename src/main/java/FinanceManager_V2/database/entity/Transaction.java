@@ -34,13 +34,20 @@ public class Transaction implements Serializable {
     @OneToOne
     private Category category;
 
-    public Transaction(Long user_id, Double amount, Date date, String note, Category category) {
-        this.user = user_id;
+    @Column(name = "repeatable")
+    private boolean repeatable;
+
+
+    public Transaction(Long transaction, Long user, Double amount, Date date, String note, Category category, boolean repeatable) {
+        this.transaction = transaction;
+        this.user = user;
         this.amount = amount;
         this.date = date;
         this.note = note;
         this.category = category;
+        this.repeatable = repeatable;
     }
+
     public Transaction(TransactionAction action, Category category){
         this.transaction = action.getOriginalId();
         this.user = action.getUser();
@@ -48,6 +55,7 @@ public class Transaction implements Serializable {
         this.date = action.getDate();
         this.note = action.getNote();
         this.category = category;
+        this.repeatable = action.isRepeatable();
     }
 
     public void updateData(TransactionAction transactionAction, Category category){
@@ -57,11 +65,11 @@ public class Transaction implements Serializable {
         this.date = transactionAction.getDate();
         this.note = transactionAction.getNote();
         this.category = category;
+        this.repeatable = transactionAction.isRepeatable();
     }
 
     public Transaction() {
     }
-
 
     @Override
     public String toString() {
@@ -72,6 +80,7 @@ public class Transaction implements Serializable {
                 ", date=" + date +
                 ", note='" + note + '\'' +
                 ", category=" + category +
+                ", repeatable=" + repeatable +
                 '}';
     }
 
@@ -80,17 +89,18 @@ public class Transaction implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return transaction.equals(that.transaction) &&
+        return repeatable == that.repeatable &&
+                transaction.equals(that.transaction) &&
                 user.equals(that.user) &&
                 amount.equals(that.amount) &&
                 date.equals(that.date) &&
-                Objects.equals(note, that.note) &&
+                note.equals(that.note) &&
                 category.equals(that.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transaction, user, amount, date, note, category);
+        return Objects.hash(transaction, user, amount, date, note, category, repeatable);
     }
 
     public Long getTransaction() {
@@ -117,14 +127,6 @@ public class Transaction implements Serializable {
         this.amount = amount;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -139,5 +141,21 @@ public class Transaction implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    public void setRepeatable(boolean repeatable) {
+        this.repeatable = repeatable;
     }
 }

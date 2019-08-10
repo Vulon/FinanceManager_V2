@@ -44,7 +44,15 @@ public class AuthController {
 
     public void setUpMainApp(MainApplication mainApp){
         mainApplication = mainApp;
+//        setUpStylesheets();
     }
+//
+//    public void setUpStylesheets(){
+//        login_button.setId("button-main");
+//        register_button.setId("button-main");
+//    }
+
+
 
     @FXML public void handle_login(){
         info_label.setVisible(true);
@@ -74,6 +82,7 @@ public class AuthController {
             info_label.setText("SUCCESSFUL");
             cachedActionsManager.processUpdates();
             mainApplication.startNewScene(MainController.class);
+
             return;
         }
         info_label.setText(lang.getTextLine(Lang.TextLine.server_error));

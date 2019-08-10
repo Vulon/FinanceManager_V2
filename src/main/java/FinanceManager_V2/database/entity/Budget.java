@@ -13,6 +13,7 @@ import java.util.Set;
 @IdClass(BudgetPK.class)
 public class Budget implements Serializable {
     private static final long serialVersionUID = -5300057576001284517L;
+
     @Id
     @Column(name = "budget")
     private Long budget;
@@ -38,34 +39,31 @@ public class Budget implements Serializable {
     private Date end;
 
     @Column(name = "notifyLevel")
-    private Float notifyLevel;
+    private Double notifyLevel;
 
+    @OneToOne
+    private Category category;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "budget_category", joinColumns = {
-            @JoinColumn(name = "budget", referencedColumnName = "budget"),
-            @JoinColumn(name = "budget_user", referencedColumnName = "user")
-    }, inverseJoinColumns = {
-            @JoinColumn(name = "category", referencedColumnName = "category"),
-            @JoinColumn(name = "category_user", referencedColumnName = "user")
-    })
-
-    private Set<Category> categories = new HashSet<>();
+    @Column(name = "repeatable")
+    private boolean repeatable;
 
     public Budget() {
     }
 
 
-    public Budget(Long user_id, String name, Double amount, Date start, Date end, Float notifyLevel, Set<Category> categories) {
-        this.user = user_id;
+    public Budget(Long budget, Long user, String name, Double amount, Date start, Date end, Double notifyLevel, Category category, boolean repeatable) {
+        this.budget = budget;
+        this.user = user;
         this.name = name;
         this.amount = amount;
         this.start = start;
         this.end = end;
         this.notifyLevel = notifyLevel;
-        this.categories = categories;
+        this.category = category;
+        this.repeatable = repeatable;
     }
-    public Budget(BudgetAction action){
+
+    public Budget(BudgetAction action, Category category){
         this.budget = action.getOriginalId();
         this.user = action.getUser();
         this.name = action.getName();
@@ -73,43 +71,21 @@ public class Budget implements Serializable {
         this.start = action.getStart();
         this.end = action.getEnd();
         this.notifyLevel = action.getNotifyLevel();
-        this.categories = action.getCategories();
+        this.category = category;
+        this.repeatable = action.isRepeatable();
     }
 
-    public Budget(Long user_id, String name, Double amount, Date start, Date end, Set<Category> categories) {
-        this.user = user_id;
-        this.name = name;
-        this.amount = amount;
-        this.start = start;
-        this.end = end;
-        this.categories = categories;
-        notifyLevel = 0.25f;
-    }
 
-    public void updateData(BudgetAction budgetAction, Set<Category> categories){
+    public void updateData(BudgetAction budgetAction, Category category){
+        this.budget = budgetAction.getOriginalId();
         this.user = budgetAction.getUser();
         this.name = budgetAction.getName();
         this.amount = budgetAction.getAmount();
         this.start = budgetAction.getStart();
         this.end = budgetAction.getEnd();
-        this.categories = categories;
+        this.category = category;
+        this.repeatable = budgetAction.isRepeatable();
         this.notifyLevel = budgetAction.getNotifyLevel();
-
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Budget budget = (Budget) o;
-        return this.budget.equals(budget.budget) &&
-                user.equals(budget.user) &&
-                name.equals(budget.name) &&
-                amount.equals(budget.amount) &&
-                start.equals(budget.start) &&
-                end.equals(budget.end) &&
-                notifyLevel.equals(budget.notifyLevel) &&
-                Objects.equals(categories, budget.categories);
     }
 
     @Override
@@ -122,13 +98,31 @@ public class Budget implements Serializable {
                 ", start=" + start +
                 ", end=" + end +
                 ", notifyLevel=" + notifyLevel +
-                ", categories=" + categories +
+                ", category=" + category +
+                ", repeatable=" + repeatable +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Budget budget1 = (Budget) o;
+        return repeatable == budget1.repeatable &&
+                Objects.equals(budget, budget1.budget) &&
+                Objects.equals(user, budget1.user) &&
+                Objects.equals(name, budget1.name) &&
+                Objects.equals(amount, budget1.amount) &&
+                Objects.equals(start, budget1.start) &&
+                Objects.equals(end, budget1.end) &&
+                Objects.equals(notifyLevel, budget1.notifyLevel) &&
+                Objects.equals(category, budget1.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(budget, user, name, amount, start, end, notifyLevel, categories);
+        return Objects.hash(budget, user, name, amount, start, end, notifyLevel, category, repeatable);
     }
 
     public Long getBudget() {
@@ -145,14 +139,6 @@ public class Budget implements Serializable {
 
     public void setUser(Long user) {
         this.user = user;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
     }
 
     public String getName() {
@@ -187,11 +173,27 @@ public class Budget implements Serializable {
         this.end = end;
     }
 
-    public Float getNotifyLevel() {
+    public Double getNotifyLevel() {
         return notifyLevel;
     }
 
-    public void setNotifyLevel(Float notifyLevel) {
+    public void setNotifyLevel(Double notifyLevel) {
         this.notifyLevel = notifyLevel;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    public void setRepeatable(boolean repeatable) {
+        this.repeatable = repeatable;
     }
 }

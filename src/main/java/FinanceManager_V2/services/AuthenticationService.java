@@ -91,7 +91,7 @@ public class AuthenticationService {
         }catch (Exception e){
             return ServerResponseCode.CONNECTION_TIMEOUT;
         }
-
+        userRepository.deleteByEmail(email);
         return mapHttpStatus(HttpStatus.OK);
     }
 
@@ -123,6 +123,10 @@ public class AuthenticationService {
             setUserId(user.getId());
             userRepository.updateTokens(user.getId(), getTokenData().getAccess_token(), getTokenData().getAccess_token_expire_date(),
                     getTokenData().getRefresh_token(), getTokenData().getRefresh_token_expire_date());
+
+            user = userRepository.getById(user.getId());
+            user.setLang(lang.getLanguage().name());
+            userRepository.saveAndFlush(user);
             return ServerResponseCode.OK;
         }
         return ServerResponseCode.UNKNOWN;
@@ -148,14 +152,6 @@ public class AuthenticationService {
             return ServerResponseCode.OK;
         }
         return ServerResponseCode.UNKNOWN;
-    }
-
-
-
-    public HttpStatus debugClearUsersDatabase(){ //TODO delete debug method
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url + "/clear", String.class);
-        return response.getStatusCode();
     }
 
     public synchronized Long getUserId() {

@@ -16,6 +16,39 @@
         <server_error>Внутренняя ошибка сервера</server_error>
         <user_not_found>Пользователь с такими данными не найден в базе данных</user_not_found>
         <email_not_verified>Вы не подтвердили адрес электронной почты</email_not_verified>
+        <income>Доход</income>
+        <expense>Расход</expense>
+        <page>Страница</page>
+        <amount_of_transaction>Сумма денег</amount_of_transaction>
+        <date_of_transaction>Дата транзакции</date_of_transaction>
+        <repeatable_monthly>Повторяется каждый месяц</repeatable_monthly>
+        <not_repeatable>Не повторяется</not_repeatable>
+        <save>Сохранить</save>
+        <delete>Удалить</delete>
+        <cancel>Отмена</cancel>
+        <transactions>Транзакции</transactions>
+        <categories>Категории</categories>
+        <budgets>Бюджеты</budgets>
+        <logger>Логи</logger>
+        <settings>Настройки</settings>
+        <note>Примечание</note>
+        <name>Название</name>
+        <parent>Предок</parent>
+        <browse_icon>Обзор иконок</browse_icon>
+        <amount_of_budget>Предел бюджета</amount_of_budget>
+        <start_date>Дата начала</start_date>
+        <end_date>Дата окончания</end_date>
+        <notify_level>Уровень показа уведомлений</notify_level>
+        <type>Вид</type>
+        <transaction>Транзакция</transaction>
+        <category>Категория</category>
+        <budget>Бюджет</budget>
+        <amount_advice>Поле суммы должно содержать только вещественные числа</amount_advice>
+        <parent_advice>Вы должны выбрать предка для данной категории</parent_advice>
+        <name_advice>должно быть уникальным и быть длинной больше одно символа</name_advice>
+        <icon_advice>Вы должны выбрать иконку</icon_advice>
+        <budget_dates_advice>Вы должны выбрать дату начала и дату окончания периода действия бюджета</budget_dates_advice>
+        <database_update_exception>Произошла ошибка при обновлении базы данных</database_update_exception>
     </language>
     <language id="ENGLISH">
         <login>Sign in</login>
@@ -34,5 +67,38 @@
         <server_error>Internal server error</server_error>
         <user_not_found>User with that email and password has not been found in database</user_not_found>
         <email_not_verified>You have not verified your email address</email_not_verified>
+        <income>Income</income>
+        <expense>Expense</expense>
+        <page>Page</page>
+        <amount_of_transaction>Amount of cash</amount_of_transaction>
+        <date_of_transaction>Transaction Date</date_of_transaction>
+        <repeatable_monthly>Repeatable monthly</repeatable_monthly>
+        <not_repeatable>Not repeatable</not_repeatable>
+        <save>Save</save>
+        <delete>Delete</delete>
+        <cancel>Cancel</cancel>
+        <transactions>Transactions</transactions>
+        <categories>Categories</categories>
+        <budgets>Budgets</budgets>
+        <logger>Logs</logger>
+        <settings>Settings</settings>
+        <note>Note</note>
+        <name>Name</name>
+        <parent>Parent</parent>
+        <browse_icon>Browse Icons</browse_icon>
+        <amount_of_budget>Budget Limit</amount_of_budget>
+        <start_date>Start date</start_date>
+        <end_date>End date</end_date>
+        <notify_level>Notification alert level</notify_level>
+        <type>type</type>
+        <transaction>Transaction</transaction>
+        <category>Category</category>
+        <budget>Budget</budget>
+        <amount_advice>Amount field should contain only real numbers</amount_advice>
+        <parent_advice>You should pick parent for this category</parent_advice>
+        <name_advice>should be unique and have nonzero length</name_advice>
+        <icon_advice>You should choice icon</icon_advice>
+        <budget_dates_advice>You should choice start and finish date of this budget's period</budget_dates_advice>
+        <database_update_exception>Exception occurred during database modification</database_update_exception>
     </language>
 </languages>

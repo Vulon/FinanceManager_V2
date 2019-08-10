@@ -35,6 +35,12 @@ public class ActionQueue implements Serializable {
         categoryActions = new ArrayList<>();
     }
 
+    public void clear(){
+        budgetActions.clear();
+        transactionActions.clear();
+        categoryActions.clear();
+    }
+
     public void addAll(ActionQueue queue){
         this.budgetActions.addAll(queue.getBudgetActions());
         this.categoryActions.addAll(queue.getCategoryActions());

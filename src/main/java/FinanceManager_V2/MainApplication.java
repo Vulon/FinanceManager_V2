@@ -3,6 +3,7 @@ package FinanceManager_V2;
 import FinanceManager_V2.Database.Repositories.CategoryRepository;
 import FinanceManager_V2.Database.Repositories.TransactionRepository;
 import FinanceManager_V2.Interface_controllers.AuthController;
+import FinanceManager_V2.Interface_controllers.IconDialogController;
 import FinanceManager_V2.Interface_controllers.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -50,12 +51,9 @@ public class MainApplication extends Application {
         primaryStage.setTitle("Finance Manager");
 
         startNewScene(AuthController.class);
-
-        //primaryStage.show();
     }
 
     public void startNewScene(Class controllerClass){
-
         try{
             if(controllerClass.equals(AuthController.class)){
                 if(lastStage != null)
@@ -71,6 +69,9 @@ public class MainApplication extends Application {
                 authController.setUpMainApp(this);
                 Scene scene = new Scene(authParent, 800, 600);
                 stage.setScene(scene);
+                stage.setMinWidth(600);
+                stage.setMinHeight(500);
+                scene.getStylesheets().add(getClass().getResource("/stylesheets/default.css").toExternalForm());
                 stage.show();
                 lastStage = stage;
             }else if(controllerClass.equals(MainController.class)){
@@ -82,11 +83,31 @@ public class MainApplication extends Application {
                 fxmlLoader.setLocation(getClass().getResource("/fxml/mainscene.fxml"));
                 Parent mainParent = fxmlLoader.load();
                 mainController = fxmlLoader.getController();
-                Scene scene = new Scene(mainParent, 800, 600);
+                Scene scene = new Scene(mainParent, 900, 800);
                 stage.setScene(scene);
+                mainController.setUpMainApplication(this);
                 mainController.manualSetUp();
+                stage.setMinHeight(800);
+                stage.setMinWidth(900);
+                scene.getStylesheets().add(getClass().getResource("/stylesheets/default.css").toExternalForm());
                 stage.show();
                 lastStage = stage;
+            }else if(controllerClass.equals(IconDialogController.class)){
+                Stage stage = new Stage();
+                stage.setTitle("Icons");
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setControllerFactory(springContext::getBean);
+                fxmlLoader.setLocation(getClass().getResource("/fxml/icondialog.fxml"));
+                Parent iconParent = fxmlLoader.load();
+                IconDialogController iconDialogController = fxmlLoader.getController();
+                iconDialogController.manualSetUp(mainController, mainController.iconLoader);
+                Scene scene = new Scene(iconParent, 580, 480);
+                stage.setScene(scene);
+                stage.show();
+                lastStage = stage;
+                stage.setMinWidth(580);
+                stage.setMinHeight(480);
+                scene.getStylesheets().add(getClass().getResource("/stylesheets/default.css").toExternalForm());
             }
         }catch (Exception e){
             e.printStackTrace();

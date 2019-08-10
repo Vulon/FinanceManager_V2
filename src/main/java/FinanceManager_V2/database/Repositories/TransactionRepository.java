@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Transa
     List<Transaction> findAllByUserOrderByDateDesc(Long user, Pageable pageable);
 
     @Query
-    List<Transaction> findAllByUserOrderByDateDesc(Long user);
+    ArrayList<Transaction> findAllByUserOrderByDateDesc(Long user);
+
+
 }
 

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="main_pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="220.0" prefHeight="136.0" prefWidth="248.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.20001220703125" minWidth="10.0" prefWidth="87.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.0" minWidth="10.0" prefWidth="152.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="36.4" minHeight="10.0" prefHeight="34.799993896484374" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="64.80001220703124" minHeight="10.0" prefHeight="46.7999755859375" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="111.19999389648436" minHeight="10.0" prefHeight="57.20002441406248" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <BorderPane fx:id="image_box" minHeight="64.0" minWidth="64.0" prefHeight="64.0" prefWidth="64.0" GridPane.rowSpan="2">
+         <center>
+            <ImageView fx:id="icon_view" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+      <Label fx:id="name_label" text="Name" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Label fx:id="income_label" text="Income" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Label fx:id="parent_label" text="Parent" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <BorderPane fx:id="parent_box" minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" GridPane.rowIndex="2">
+         <center>
+            <ImageView fx:id="parent_view" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </children>
+</GridPane>

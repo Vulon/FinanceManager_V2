@@ -2,6 +2,7 @@ package FinanceManager_V2.Interface_controllers.ListViewCellsControllers;
 
 import FinanceManager_V2.Database.Entity.Transaction;
 import FinanceManager_V2.Services.IconLoader;
+import FinanceManager_V2.Services.Lang;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -23,9 +24,14 @@ public class TransactionListViewCellController{
     @FXML    private BorderPane image_box;
 
     public static IconLoader _iconLoader;
+    public static Lang _lang;
 
-    public TransactionListViewCellController(IconLoader iconLoader) {
+    public static void setStaticData(IconLoader iconLoader, Lang lang){
         _iconLoader = iconLoader;
+        _lang = lang;
+    }
+
+    public TransactionListViewCellController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/listCells/transactionCell.fxml"));
         loader.setController(this);
         try{
@@ -38,13 +44,9 @@ public class TransactionListViewCellController{
         icon_view.setImage(
                 _iconLoader.icons.get(item.getCategory().getIcon_id()));
         Color c = Color.web(item.getCategory().getColor());
-        //int blue = (int)(255 * c.getBlue());
-        //int red = (int)(255 * c.getRed());
-        // int green = (int)(255 * c.getGreen());
         image_box.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
-        //icon_view.setStyle("-fx-background-color: rgb(" + red + "," + green + "," + blue + ");");
-        category_label.setText(item.getCategory().getName());
-        amount_label.setText("Amount: " + item.getAmount().toString());
+        category_label.setText(_lang.getTextLine(Lang.TextLine.category) + ": " + item.getCategory().getName());
+        amount_label.setText(_lang.getTextLine(Lang.TextLine.amount_of_transaction) + ": " + item.getAmount().toString());
         DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
         date_label.setText(dateFormat.format(item.getDate()));
         note_label.setText(item.getNote());

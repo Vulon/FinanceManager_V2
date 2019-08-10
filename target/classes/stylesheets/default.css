@@ -1,0 +1,19 @@
+.root{
+    -fx-background-color: #dbfffd;
+}
+#button-main{
+    -fx-background-color: #76de9e;
+    -fx-border-color: #ffff70;
+}
+#button-main:hover{
+    -fx-background-color: #22d466;
+    -fx-border-color: #ffff70;
+}
+.label{
+    -fx-font-size: 20;
+    -fx-font-family: Caladea;
+}
+.text-field{
+    -fx-font-family: Caladea;
+    -fx-font-size: 18;
+}

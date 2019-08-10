@@ -29,6 +29,9 @@ public class Category implements Serializable {
     @Column(name = "icon_id")
     private Integer icon_id;
 
+    @Column(name = "income")
+    private boolean income;
+
     @OneToOne
     private Category parent;
 
@@ -37,16 +40,16 @@ public class Category implements Serializable {
     }
 
 
-
-
-
-    public Category(Long user_id, String color, String name, Integer icon_id, Category parent) {
-        this.user = user_id;
+    public Category(Long category, Long user, String color, String name, Integer icon_id, boolean income, Category parent) {
+        this.category = category;
+        this.user = user;
         this.color = color;
         this.name = name;
         this.icon_id = icon_id;
+        this.income = income;
         this.parent = parent;
     }
+
     public Category(CategoryAction action, Category parent){
         this.category = action.getOriginalId();
         this.user = action.getUser();
@@ -54,7 +57,10 @@ public class Category implements Serializable {
         this.name = action.getName();
         this.icon_id = action.getIcon_id();
         this.parent = parent;
+        this.income = action.isIncome();
+
     }
+
     public void updateData(CategoryAction categoryAction, Category parent){
         this.category = categoryAction.getOriginalId();
         this.user = categoryAction.getUser();
@@ -62,6 +68,7 @@ public class Category implements Serializable {
         this.name = categoryAction.getName();
         this.icon_id = categoryAction.getIcon_id();
         this.parent = parent;
+        this.income = categoryAction.isIncome();
     }
 
     public Category getParent() {
@@ -72,6 +79,7 @@ public class Category implements Serializable {
         this.parent = parent;
     }
 
+
     @Override
     public String toString() {
         return "Category{" +
@@ -80,6 +88,7 @@ public class Category implements Serializable {
                 ", color='" + color + '\'' +
                 ", name='" + name + '\'' +
                 ", icon_id=" + icon_id +
+                ", income=" + income +
                 ", parent=" + parent +
                 '}';
     }
@@ -88,19 +97,19 @@ public class Category implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return this.category.equals(category.category) &&
-                user.equals(category.user) &&
-                color.equals(category.color) &&
-                name.equals(category.name) &&
-                icon_id.equals(category.icon_id);
+        Category category1 = (Category) o;
+        return income == category1.income &&
+                category.equals(category1.category) &&
+                user.equals(category1.user) &&
+                color.equals(category1.color) &&
+                name.equals(category1.name) &&
+                icon_id.equals(category1.icon_id) &&
+                Objects.equals(parent, category1.parent);
     }
-
-
 
     @Override
     public int hashCode() {
-        return Objects.hash(category, user, color, name, icon_id, parent);
+        return Objects.hash(category, user, color, name, icon_id, income, parent);
     }
 
     public Long getCategory() {
@@ -137,6 +146,14 @@ public class Category implements Serializable {
 
     public Integer getIcon_id() {
         return icon_id;
+    }
+
+    public boolean isIncome() {
+        return income;
+    }
+
+    public void setIncome(boolean income) {
+        this.income = income;
     }
 
     public void setIcon_id(Integer icon_id) {
