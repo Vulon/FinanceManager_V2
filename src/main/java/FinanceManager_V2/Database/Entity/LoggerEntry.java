@@ -9,6 +9,7 @@ import java.util.Date;
 @Table(name = "logs")
 public class LoggerEntry implements Serializable {
     @Column(name = "id")
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -30,6 +31,9 @@ public class LoggerEntry implements Serializable {
         this.date = date;
         this.sourceClass = sourceClass;
         this.note = note;
+    }
+
+    public LoggerEntry() {
     }
 
     public Long getUser_id() {

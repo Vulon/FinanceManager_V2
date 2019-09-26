@@ -9,10 +9,7 @@ import FinanceManager_V2.ListViewCells.BudgetListViewCell;
 import FinanceManager_V2.ListViewCells.CategoryListViewCell;
 import FinanceManager_V2.ListViewCells.TransactionListViewCell;
 import FinanceManager_V2.MainApplication;
-import FinanceManager_V2.Services.AuthenticationService;
-import FinanceManager_V2.Services.CachedActionsManager;
-import FinanceManager_V2.Services.IconLoader;
-import FinanceManager_V2.Services.Lang;
+import FinanceManager_V2.Services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +25,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
 import java.time.Instant;
@@ -58,7 +56,7 @@ public class MainController {
 
     private MainApplication mainApplication;
 
-    public MainController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, AuthenticationService authenticationService, BudgetActionRepository budgetActionRepository, TransactionActionRepository transactionActionRepository, CategoryActionRepository categoryActionRepository, CachedActionsManager cachedActionsManager, IconLoader iconLoader, Lang lang, EventsPublisher eventsPublisher) {
+    public MainController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, BudgetRepository budgetRepository, AuthenticationService authenticationService, BudgetActionRepository budgetActionRepository, TransactionActionRepository transactionActionRepository, CategoryActionRepository categoryActionRepository, CachedActionsManager cachedActionsManager, IconLoader iconLoader, Lang lang, EventsPublisher eventsPublisher, GraphicEventsHandler graphicEventsHandler) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
         this.budgetRepository = budgetRepository;
@@ -70,20 +68,21 @@ public class MainController {
         this.iconLoader = iconLoader;
         this.lang = lang;
         this.eventsPublisher = eventsPublisher;
-        graphicEventsHandler = new GraphicEventsHandler();
+        this.graphicEventsHandler = graphicEventsHandler;
+        graphicEventsHandler.setUPMainController(this);
     }
 
 
-    private boolean setupCompleted  = false;
+    public boolean setupCompleted  = false;
     //Main Control buttons
     @FXML    private ToggleButton main_transactions;
     @FXML    private ToggleButton main_categories;
     @FXML    private ToggleButton main_budgets;
     @FXML    private ToggleButton main_connection;
     @FXML    private ToggleButton main_settings;
-    @FXML    private ProgressIndicator main_progressindicator;
+    @FXML    public ProgressIndicator main_progressindicator;
     @FXML    public StackPane stack_pane;
-    @FXML    private Label info_label;
+    @FXML    public Label info_label;
     @FXML void handle_tab_selection(ActionEvent actionEvent){
         ToggleButton toggleButton = (ToggleButton)actionEvent.getSource();
         main_transactions.setSelected(false);
@@ -94,6 +93,7 @@ public class MainController {
         ca_pane.setVisible(false);
         tr_pane.setVisible(false);
         bu_pane.setVisible(false);
+        se_pane.setVisible(false);
         if(toggleButton.getId().equals(main_transactions.getId())){
             tr_pane.setVisible(true);
             main_transactions.setSelected(true);
@@ -106,7 +106,8 @@ public class MainController {
         }else if(toggleButton.getId().equals(main_connection.getId())){
 
         }else if(toggleButton.getId().equals(main_settings.getId())){
-
+            se_pane.setVisible(true);
+            main_settings.setSelected(true);
         }
     }
 
@@ -172,13 +173,13 @@ public class MainController {
     private int tr_pagesCount;
     private static int MAX_PAGE_TRANSACTIONS_COUNT = 10;
 
-    private void tr_updateCategoriesList(){
+    public void tr_updateCategoriesList(){
         tr_categoryObservableList.clear();
         ArrayList<Category> categories = categoryRepository.findAllByUser(authenticationService.getUserId());
         tr_categoryObservableList.addAll(categories);
         System.out.println("Found categories count: " + categories.size());
     }
-    private void tr_updateTransactionsList(){
+    public void tr_updateTransactionsList(){
         Pageable pageable = PageRequest.of(tr_page.getSelectionModel().getSelectedIndex(), MAX_PAGE_TRANSACTIONS_COUNT);
         List<Transaction> newTransactions = transactionRepository.findAllByUserOrderByDateDesc(authenticationService.getUserId(), pageable);
         System.out.println("Found transactions: " + newTransactions);
@@ -237,6 +238,7 @@ public class MainController {
     @FXML
     void ca_handle_save(){
         System.out.println("color: " + ca_colorpicker.getValue().toString());
+        System.out.println("Category radio button armed? " + ca_edit_income.isArmed());
         if(ca_parent.getSelectionModel().getSelectedIndex() < 0){
             eventsPublisher.publishIncorrectInputEvent("", lang.getTextLine(Lang.TextLine.parent_advice));
             return;
@@ -305,7 +307,7 @@ public class MainController {
         ca_cancel.setVisible(true);
     }
 
-    private void ca_updateCategoriesList(){
+    public void ca_updateCategoriesList(){
         ca_categoriesObservableList.clear();
         tr_categoryObservableList.forEach(category -> {
             if(category.isIncome() == ca_list_income.isArmed()){
@@ -315,7 +317,7 @@ public class MainController {
         System.out.println("Found categories: " + ca_categoriesObservableList);
     }
 
-    private void ca_updateParentList(){
+    public void ca_updateParentList(){
         Category selected;
         if(ca_selected_categoryID < 0){
             selected = null;
@@ -354,7 +356,7 @@ public class MainController {
     private ObservableList<Budget> bu_budgetsObservableList;
     private ObservableList<Double> bu_notifyObservableList;
 
-    private void bu_updateBudgetsList(){
+    public void bu_updateBudgetsList(){
 
         ArrayList<Budget> tempList = new ArrayList<>();
         tempList.addAll(budgetRepository.getAllByUser(authenticationService.getUserId()));
@@ -464,6 +466,9 @@ public class MainController {
         }
     }
 
+
+    @FXML
+    private GridPane se_pane;
     @FXML
     private ComboBox<Lang.Language> se_lang_box;
     private ObservableList<Lang.Language> se_observableLangList;
@@ -738,6 +743,8 @@ public class MainController {
 
     }
 
+
+
     private Callback<ListView<Category>, ListCell<Category>> createCategoryComboBoxCellFactory(){
         return new Callback<ListView<Category>, ListCell<Category>>() {
             @Override
@@ -756,88 +763,5 @@ public class MainController {
             }
         };
     }
-    private class GraphicEventsHandler{
-        private Date notifyDate;
-        private void hideInfoLabel(){
-            notifyDate = Date.from(Instant.now());
-            Thread thread = new Thread(() -> {
-                try{
-                    Thread.sleep(5000);
-                }catch (Exception e){
-                    info_label.setVisible(false);
-                }
-                if (Date.from(Instant.now()).getTime() - notifyDate.getTime() >= 5000){
-                    info_label.setVisible(false);
-                }
-            });
-            Platform.runLater(thread);
-        }
-        @EventListener
-        public void handleServerConnectionProgressEvent(ServerConnectionProgressEvent event){
-            main_progressindicator.setVisible(true);
-            if(event.getProgress() < 0){
-                main_progressindicator.setProgress(0);
-                main_progressindicator.setVisible(false);
-            }else if(event.getProgress() < 100){
-                main_progressindicator.setProgress(event.getProgress());
-            }else{
-                main_progressindicator.setProgress(1);
-                Thread thread = new Thread(() -> {
-                    try{
-                        Thread.sleep(3000);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    Platform.runLater(() -> {
-                        if(main_progressindicator.getProgress() >= 1){
-                            main_progressindicator.setVisible(false);
-                        }
-                    });
-                });
-                thread.start();
-            }
-        }
 
-        @EventListener
-        public void handleDataChanged(DataChangedEvent dataChangedEvent){
-            System.out.println("Caught data changed event ");
-            Platform.runLater(() -> {
-                if(!setupCompleted){
-                    manualSetUp();
-                }
-                if(dataChangedEvent.isCategoriesChanged()){
-                    tr_updateCategoriesList();
-                    ca_updateCategoriesList();
-                    ca_updateParentList();
-                }
-                if(dataChangedEvent.isTransactionsChanged()){
-                    tr_updateTransactionsList();
-                    bu_updateBudgetsList();
-                }
-                if(dataChangedEvent.isBudgetsChanged()){
-                    bu_updateBudgetsList();
-                }
-            });
-        }
-
-        @EventListener
-        public void handleServerErrorEvent(ServerErrorEvent errorEvent){
-            if(errorEvent.equals(AuthenticationService.ServerResponseCode.CONNECTION_TIMEOUT)
-            || errorEvent.equals(AuthenticationService.ServerResponseCode.INTERNAL_SERVER_ERROR)
-            || errorEvent.equals(AuthenticationService.ServerResponseCode.UNKNOWN)){
-                info_label.setText(lang.getTextLine(Lang.TextLine.server_error));
-            }
-            hideInfoLabel();
-        }
-        @EventListener
-        public void handleDatabaseUpdateException(DatabaseModifyEvent event){
-            info_label.setText(lang.getTextLine(Lang.TextLine.database_update_exception));
-            hideInfoLabel();
-        }
-        @EventListener
-        public void handleIncorrectInputEvent(IncorrectInputEvent event){
-            info_label.setText(event.getField() + " " + event.getAdvice());
-            hideInfoLabel();
-        }
-    }
 }

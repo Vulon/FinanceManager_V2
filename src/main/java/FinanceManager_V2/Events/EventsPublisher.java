@@ -16,6 +16,7 @@ public class EventsPublisher {
     }
 
     public void publishServerConnectionProgressEvent(Double value){
+        System.out.println("Publishing server connection progess event");
         eventPublisher.publishEvent(new ServerConnectionProgressEvent(this, value));
     }
 

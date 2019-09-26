@@ -43,10 +43,10 @@ public class BudgetListViewCellController {
 
     public void setContent(Budget budget, double sum){
         name_label.setText(_lang.getTextLine(Lang.TextLine.name) + ": " + budget.getName());
-        amount_label.setText(_lang.getTextLine(Lang.TextLine.amount_of_budget) + ": " + budget.getAmount() + " / " + sum);
+        amount_label.setText(_lang.getTextLine(Lang.TextLine.amount_of_budget) + ": " + sum + " / " + budget.getAmount());
         start_label.setText(_lang.getTextLine(Lang.TextLine.start_date) + ": " + budget.getStart().toString());
         end_label.setText(_lang.getTextLine(Lang.TextLine.end_date) + ": " + budget.getEnd().toString());
-        notifylevel_label.setText(_lang.getTextLine(Lang.TextLine.notify_level) + ": " + budget.getNotifyLevel() * 100);
+        notifylevel_label.setText(_lang.getTextLine(Lang.TextLine.notify_level) + ": " + budget.getNotifyLevel() * 100 + "%");
         if(budget.isRepeatable()){
             repeatable_label.setText(_lang.getTextLine(Lang.TextLine.repeatable_monthly));
         }else{

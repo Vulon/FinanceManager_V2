@@ -68,7 +68,7 @@ public class CachedActionsManager {
     }
 
 
-    public class ServerConnectionThread implements Runnable{
+    public class ServerConnectionThread implements Runnable {
 
         private ActionQueue localQueue;
         private TokenData tokenData;
@@ -90,7 +90,7 @@ public class CachedActionsManager {
 
             loadCachedActionsToDatabase(cachedActions);
             cachedActions.clear();
-            if (!isAccessTokenValid()){
+            if (!isAccessTokenValid()) {
                 setThreadActive(false);
                 System.out.println("CachedActionsManager: token not valid");
                 eventsPublisher.publishServerConnectionProgressEvent(1.0);
@@ -100,14 +100,14 @@ public class CachedActionsManager {
             //get updates from server
             ActionQueue updatesQueue;
             int categoriesAmount = categoryRepository.findAllByUser(authenticationService.getUserId()).size();
-            if(categoriesAmount < 2){
+            if(categoriesAmount < 2) {
                 Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(2000, Calendar.JANUARY, 1);
                 System.out.println("Update date set to 1.1.2000 because categories amount: " + categoriesAmount);
                 updatesQueue =  serverDataManager.getLastUpdates(
                         tokenData.getAccess_token(),
                         Date.from(calendar.toInstant()));
-            }else{
+            } else {
                 System.out.println("Update date set to " + authenticationService.getLastUpdateDate().toString());
                 updatesQueue = serverDataManager.getLastUpdates(
                         tokenData.getAccess_token(),

@@ -26,4 +26,6 @@ public interface CategoryRepository extends JpaRepository<Category, CategoryPK> 
 
     @Query
     ArrayList<Category> findAllByUser(Long user);
+    
+    
 }
